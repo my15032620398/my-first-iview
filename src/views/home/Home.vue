@@ -131,10 +131,14 @@
                         this.$router.push('/addBannerItem')
                         break
                     case '子分类列表':
-                        console.log("-----home-------")
-                        console.log(this.sharedState.categoryRootId)
                         this.$router.push({path: '/subCategoryList', query: {id: this.sharedState.categoryRootId}})
                         break
+                  case '编辑分类列表':
+                    this.$router.push({path:'/subCategoryDetail',query:{data:this.sharedState.subCategoryDetail}})
+                    break
+                  case '添加子分类':
+                    this.$router.push('/addSubCategory')
+
                 }
             },
             isHome(route) {

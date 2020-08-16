@@ -6,6 +6,8 @@ import BannerDetail from "./views/banner/BannerDetail";
 import BannerItemDetail from "./views/banner/BannerItemDetail";
 import AddBannerItem from "./views/banner/AddBannerItem";
 import SubCategoryList from "./views/category/SubCategoryList";
+import SubCategoryDetail from "./views/category/SubCategoryDetail";
+import AddCategory from "./views/category/AddCategory";
 const routers = [
     {
         path: '/',
@@ -54,6 +56,18 @@ const routers = [
                 name:'subCategoryList',
                 meta:{title:'子分类列表'},
                 component:SubCategoryList
+            },
+            {
+                path:'/subCategoryDetail',
+                name:'subCategoryDetail',
+                meta:{title:'编辑分类列表'},
+                component:SubCategoryDetail
+            },
+            {
+                path:'/addCategory',
+                name:'addCategory',
+                meta:{title:'添加子分类'},
+                component:AddCategory
             }
         ]
     },

@@ -83,7 +83,8 @@
                 }).catch(err=>{
                     console.log(err)
                 })
-                this.uploadList.splice(this.uploadList.indexOf(file),1);
+              this.formBanner.img = null
+              this.uploadList.splice(this.uploadList.indexOf(file),1);
             },
             handleSuccess(res, file) {
                 this.item.status = 'finished'

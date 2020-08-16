@@ -1,33 +1,34 @@
 <template>
-  <div>
-    <div class="t-1">
-      <div class="t-1-1">分类列表</div>
-      <Button type="primary">添加分类</Button>
+    <div>
+        <div class="t-1">
+            <div class="t-1-1">分类列表</div>
+            <Button type="primary" @click="addCategory">添加分类</Button>
+        </div>
+        <Table border :columns="columns12" :data="data6" :loading="loading">
+            <template slot-scope="{row}" slot="img">
+                <img :src="row.img" class="bannerImg">
+            </template>
+            <template slot-scope="{ row }" slot="online">
+                <strong>{{ row.online=='1'?'显示':'不显示' }}</strong>
+            </template>
+            <template slot-scope="{ row, index }" slot="action">
+                <Button type="primary" size="small" style="margin-right: 5px" @click="show(row.id)">子分类</Button>
+                <Button type="primary" size="small" style="margin-right: 5px" @click="edit(row)">编辑</Button>
+                <Button type="error" size="small" @click="remove(row.id,index)">删除</Button>
+            </template>
+        </Table>
+        <div style="margin: 10px;overflow: hidden">
+            <div style="float: right;">
+                <Page :total="total" :current="page" :page-size="count" @on-change="onPageChange"></Page>
+            </div>
+        </div>
     </div>
-    <Table border :columns="columns12" :data="data6" :loading="loading">
-      <template slot-scope="{row}" slot="img">
-        <img :src="row.img" class="bannerImg">
-      </template>
-      <template slot-scope="{ row }" slot="online">
-        <strong>{{ row.online=='1'?'显示':'不显示' }}</strong>
-      </template>
-      <template slot-scope="{ row, index }" slot="action">
-        <Button type="primary" size="small" style="margin-right: 5px" @click="show(row.id)">子分类</Button>
-        <Button type="primary" size="small" style="margin-right: 5px" @click="show(row.id)">编辑</Button>
-        <Button type="error" size="small" @click="remove(row.id,index)">删除</Button>
-      </template>
-    </Table>
-    <div style="margin: 10px;overflow: hidden">
-      <div style="float: right;">
-        <Page :total="total" :current="page" :page-size="count" @on-change="onPageChange"></Page>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
     import http from "../../request/http";
-import store from "../../store";
+    import store from "../../store";
+
     export default {
         data() {
             return {
@@ -64,41 +65,51 @@ import store from "../../store";
                     }
                 ],
                 data6: [],
-                loading:true,
-                page:1,
-                count:3,
-                total:0,
-                root:1
+                loading: true,
+                page: 1,
+                count: 3,
+                total: 0,
+                root: 1
             }
         },
         methods: {
             show(categoryRootId) {
-                console.log("---categoryRootId------")
-                console.log(categoryRootId)
                 store.setCategoryRootId(categoryRootId);
-                this.$router.push({path:'/subCategoryList',query:{id:categoryRootId}})
+                this.$router.push({path: '/subCategoryList', query: {id: categoryRootId}})
             },
-            remove(index) {
-                this.data6.splice(index, 1);
+            edit(category) {
+              store.setSubCategoryDetail(category)
+              this.$router.push({path: '/subCategoryDetail', query: {data: category}})
             },
-            getCategoryList(){
-                const param={
-                    page:this.page,
-                    count:this.count,
-                    root:this.root
+            remove(id, index) {
+                http.fetchDelete('/v1/category/' + id, null).then((res => {
+                    this.data6.splice(index, 1);
+                    this.$Message.success(res.data.message)
+                })).catch(err => {
+                    this.$Message.error(err.data.message)
+                })
+            },
+            getCategoryList() {
+                const param = {
+                    page: this.page,
+                    count: this.count,
+                    root: this.root
                 }
-                http.fetchGet("/v1/category/page",param).then((res)=>{
+                http.fetchGet("/v1/category/page", param).then((res) => {
                     this.total = res.data.total;
                     this.data6 = res.data.items
                     this.loading = false
-                }).catch(err=>{
+                }).catch(err => {
                     console.log(err)
                 })
 
             },
-            onPageChange(page){
+            onPageChange(page) {
                 this.page = page;
                 this.getCategoryList();
+            },
+            addCategory() {
+                this.$router.push('/addCategory')
             }
         },
         created() {
@@ -108,21 +119,23 @@ import store from "../../store";
 </script>
 
 <style scoped>
-  .bannerImg{
-    width: auto;
-    height: auto;
-    max-width: 30%;
-    max-height: 30%;
-  }
-  .t-1{
-    display: flex;
-    flex-direction: row;
-    justify-items: center;
-    align-items: center;
-    padding-bottom: 20px;
-  }
-  .t-1-1{
-    color: #6739ff;
-    padding-right: 20px;
-  }
+    .bannerImg {
+        width: auto;
+        height: auto;
+        max-width: 30%;
+        max-height: 30%;
+    }
+
+    .t-1 {
+        display: flex;
+        flex-direction: row;
+        justify-items: center;
+        align-items: center;
+        padding-bottom: 20px;
+    }
+
+    .t-1-1 {
+        color: #6739ff;
+        padding-right: 20px;
+    }
 </style>

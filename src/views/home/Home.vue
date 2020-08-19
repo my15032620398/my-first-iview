@@ -225,6 +225,7 @@
                     this.tabs = []
                     this.$router.push('/')
                     return
+
                 }
                 console.log('--------handleTabRemove--start---')
                 this.tabs.splice(this.tabs.indexOf(name), 1);

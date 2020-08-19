@@ -44,19 +44,16 @@
             </span>
               </Breadcrumb>
             </div>
-            <div class="layout-header-bar-down" style="{height: 28px}" v-if="headTags.length!==0">
-              <div v-for="(item,index) in headTags" :key="index" class="headTags">
-                <Tag :name="item.name" closable
-                     size='medium' color="success" checkable @on-close="onCloseHeardTag"
-                     @on-change="onChangeHeadTag" :checked="item.checked">
-                  {{item.name}}
-                </Tag>
-              </div>
-            </div>
           </div>
 
         </Header>
-        <content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
+        <content class="c-1">
+          <template>
+            <Tabs type="card" @on-click="onChangeTabs" :value="tabName" @on-tab-remove="handleTabRemove">
+              <TabPane v-for="tab in tabs" :key="tab" :label='tab' type="card" closable :name="tab" >
+              </TabPane>
+            </Tabs>
+          </template>
           <Scroll :height="contentScollerHeight">
             <router-view></router-view>
           </Scroll>
@@ -81,7 +78,9 @@
                 headTags: [],
                 headTagChecked: Boolean,
                 sharedState: store.state,
-                contentScollerHeight: (window.innerHeight - 140)
+                contentScollerHeight: (window.innerHeight - 140),
+                tabs: [],
+                tabName: ''
             }
         },
         computed: {
@@ -98,7 +97,7 @@
                 ]
             },
             scrollerHeight() {
-                  return (window.innerHeight - 1) + 'px'
+                return (window.innerHeight - 1) + 'px'
             },
         },
         watch: {
@@ -111,6 +110,8 @@
                 this.$refs.side1.toggleCollapse();
             },
             onClickBannerList(name) {
+                this.initTabs(name);
+                console.log('11111111111111111111')
                 switch (name) {
                     case 'Banner列表':
                         this.$router.push('/bannerList');
@@ -133,11 +134,17 @@
                     case '子分类列表':
                         this.$router.push({path: '/subCategoryList', query: {id: this.sharedState.categoryRootId}})
                         break
-                  case '编辑分类列表':
-                    this.$router.push({path:'/subCategoryDetail',query:{data:this.sharedState.subCategoryDetail}})
-                    break
-                  case '添加子分类':
-                    this.$router.push('/addSubCategory')
+                    case '编辑分类列表':
+                        this.$router.push({
+                            path: '/subCategoryDetail',
+                            query: {data: this.sharedState.subCategoryDetail}
+                        })
+                        break
+                    case '添加子分类':
+                        this.$router.push('/addSubCategory')
+                        break
+                    default:
+                        this.$router.push('/')
 
                 }
             },
@@ -172,12 +179,13 @@
                     }
 
                 }
+                // this.initTabs(this.headTags[this.headTags.length - 1].name)
             },
             onCloseHeardTag(event, name) {
                 console.log(this.headTags)
-                let index=0 ;
-                for (let i=0;i<this.headTags.length;i++){
-                    if(this.headTags[i].name == name){
+                let index = 0;
+                for (let i = 0; i < this.headTags.length; i++) {
+                    if (this.headTags[i].name == name) {
                         index = i
                     }
                 }
@@ -186,13 +194,44 @@
                 if (this.headTags.length !== 0) {
                     this.headTags[this.headTags.length - 1].checked = true
                 }
-                this.onChangeHeadTag(true,this.headTags[this.headTags.length - 1].name)
+                this.onChangeHeadTag(true, this.headTags[this.headTags.length - 1].name)
 
             },
             onChangeHeadTag(checked, name) {
                 console.log(name)
                 console.log(checked)
                 this.onClickBannerList(name)
+            },
+            initTabs(name) {
+                if (this.tabs.indexOf(name) == '-1') {
+                    console.log('----indexof------')
+                    console.log(name)
+                    this.tabs.push(name)
+                    this.tabName = name
+                    console.log(this.tabName)
+                    console.log(this.tabs)
+                } else {
+                    this.tabName = name
+                }
+            },
+            onChangeTabs(name) {
+                console.log(name)
+                this.onClickBannerList(name)
+            },
+            handleTabRemove(name) {
+                if(this.tabs.length==1){
+                    console.log('length ==1 ')
+                    this.tabName = ''
+                    this.tabs = []
+                    this.$router.push('/')
+                    return
+                }
+                console.log('--------handleTabRemove--start---')
+                this.tabs.splice(this.tabs.indexOf(name), 1);
+                console.log(this.tabs)
+                console.log(this.tabs[this.tabs.length-1])
+                this.onClickBannerList(this.tabs[this.tabs.length-1])
+                console.log('--------handleTabRemove--end---')
             }
         },
         created() {
@@ -290,5 +329,9 @@
     display: flex;
     flex-direction: row;
     height: 100%;
+  }
+
+  .c-1 {
+    padding: 10px 10px 10px 10px;
   }
 </style>

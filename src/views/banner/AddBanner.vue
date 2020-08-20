@@ -8,37 +8,7 @@
         <Input v-model="formBanner.title" class="formBanner" placeholder="请输入Banner的标题"/>
       </FormItem>
       <FormItem label="图片">
-        <div class="demo-upload-list" v-for="(item,index) in uploadList" :key="index">
-          <template v-if="item.status === 'finished'">
-            <img :src="item.url">
-            <div class="demo-upload-list-cover">
-              <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
-              <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
-            </div>
-          </template>
-          <template v-else>
-            <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
-          </template>
-        </div>
-        <Upload
-                ref="upload"
-                :show-upload-list="false"
-                :on-success="handleSuccess"
-                :format="['jpg','jpeg','png']"
-                :max-size="2048"
-                :on-format-error="handleFormatError"
-                :on-exceeded-size="handleMaxSize"
-                :before-upload="handleBeforeUpload"
-                type="drag"
-                action="http://127.0.0.1:5000/cms/file"
-                style="display: inline-block;width:58px;">
-          <div style="width: 58px;height:58px;line-height: 58px;">
-            <Icon type="ios-camera" size="20"></Icon>
-          </div>
-        </Upload>
-        <Modal title="View Image" v-model="visible">
-          <img :src="this.item.url" v-if="visible" style="width: 100%">
-        </Modal>
+        <UploadFile :uploadList="uploadList" ></UploadFile>
       </FormItem>
       <FormItem label="Banner描述">
         <Input v-model="formBanner.description" class="formBanner" placeholder="请输入Banner的描述"/>
@@ -53,9 +23,13 @@
 
 <script>
     import http from "../../request/http";
+    import UploadFile from "../../components/UploadFile";
 
     export default {
         name: "AddBanner",
+        components:{
+            UploadFile
+        },
         data() {
             return {
                 formBanner: {},
@@ -68,55 +42,16 @@
         },
         methods: {
             addBanner(formBanner) {
+                formBanner.img = this.uploadList[0].url
+                console.log(formBanner)
                 http.fetchPost("/v1/banner", formBanner).then((res) => {
-                    console.log(res)
-                }).catch(err => {
-                    console.log(err)
-                })
-            },
-            handleView(name) {
-                this.imgName = name;
-                this.visible = true;
-            },
-            handleRemove(file) {
-                http.fetchDelete("/cms/file/"+file.id,null).then(()=>{
+                    this.$Message.success(res.data.message)
                 }).catch(err=>{
-                    console.log(err)
+                    console.log(err.response.data.message)
+                    this.$Message.error(JSON.stringify(err.response.data.message))
                 })
-              this.formBanner.img = null
-              this.uploadList.splice(this.uploadList.indexOf(file),1);
             },
-            handleSuccess(res, file) {
-                this.item.status = 'finished'
-                this.item.name = file.name
-                this.item.url = res[0].url
-                this.item.id = res[0].id
-                this.item.showProgress = file.showProgress
-                this.item.percentage = file.percentage
-                this.formBanner.img = res[0].url
-                this.uploadList.push(this.item)
-            },
-            handleFormatError(file) {
-                this.$Notice.warning({
-                    title: 'The file format is incorrect',
-                    desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.'
-                });
-            },
-            handleMaxSize(file) {
-                this.$Notice.warning({
-                    title: 'Exceeding file size limit',
-                    desc: 'File  ' + file.name + ' is too large, no more than 2M.'
-                });
-            },
-            handleBeforeUpload() {
-                const check = this.uploadList.length+1>1;
-                if (check) {
-                    this.$Notice.warning({
-                        title: 'Up to one pictures can be uploaded.'
-                    });
-                }
-                return !check;
-            }
+
         },
         mounted() {
 

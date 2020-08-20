@@ -74,35 +74,34 @@
                 ],
                 data6: [],
                 loading: true,
-                bannerId:Number
+                bannerId:''
             }
         },
         methods: {
             getBannerWithItemById() {
                 const id = this.$route.query.id;
-                http.fetchGet("/v1/banner/" + id, null).then((data) => {
-                    let res = data.data;
-                    console.log("---------res--------")
-                    console.log(res)
-                    this.formBanner = res;
-                    this.data6 = res.items
+                http.fetchGet("/v1/banner/" + id, null).then((res) => {
+                    this.formBanner = res.data;
+                    this.data6 = res.data.items
+
                     this.loading = false;
-                    console.log(this.formBanner)
                 }).catch(err => {
-                    console.log(err)
+                    this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
             updateBanner(formBanner) {
-                http.fetchPut("/v1/banner/"+this.bannerId, formBanner).then(() => {
+                http.fetchPut("/v1/banner/"+formBanner.id, formBanner).then((res) => {
+                    this.$Message.success(res.data.message)
                 }).catch(err => {
                     console.log(err)
+                    this.$Message.error(err.response.data.message)
                 })
             },
             remove(id,index){
                 http.fetchDelete('/v1/banner-item/'+id,null).then((res)=>{
-                    console.log(res)
+                    this.$Message.success(res.data.message)
                 }).catch(err=>{
-                    console.log(err)
+                    this.$Message.error(err.response.data.message)
                 })
                 this.data6.splice(index,1);
             },

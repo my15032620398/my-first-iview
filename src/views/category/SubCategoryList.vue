@@ -90,9 +90,12 @@
                     id: id
                 }
                 http.fetchGet("/v1/category/sub-page", param).then((res) => {
+                    if(res.data.items.length == 0){
+                        this.loading = false
+                        return
+                    }
                     this.total = res.data.total;
                     this.data6 = res.data.items
-                    this.parentId = res.data.items[0].parent_id
                     this.loading = false
                 }).catch(err => {
                     console.log(err)
@@ -118,6 +121,7 @@
             }
         },
         created() {
+            this.parentId = this.$route.query.id
             this.getSubCategoryList();
         }
     }

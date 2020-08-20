@@ -94,7 +94,7 @@
                     this.data6.splice(index, 1);
                     this.$Message.success(res.data.message)
                 })).catch(err => {
-                    this.$Message.error(err.data.message)
+                    this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
             getCategoryList() {
@@ -108,7 +108,7 @@
                     this.data6 = res.data.items
                     this.loading = false
                 }).catch(err => {
-                    console.log(err)
+                    this.$Message.error(JSON.stringify(err.response.data.message))
                 })
 
             },

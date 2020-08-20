@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Table border :columns="columns" :data="data6" :loading="loading">
+    <Table border :columns="columns" :data="data6" :loading="loading" :max-height="contentScollerHeight">
       <template slot-scope="{ row }" slot="img">
         <div class="i-1">
           <img :src="row.img" class="bannerImg">
@@ -25,12 +25,15 @@
 
     export default {
         name: "BannerList",
+        components:{
+
+        },
         data() {
             return {
                 columns: [
                     {
                         title: 'id',
-                        key: 'id'
+                        key: 'id',
                     },
                     {
                         title: '图片',
@@ -52,7 +55,8 @@
                         title: '操作',
                         slot: 'action',
                         width: 150,
-                        align: 'center'
+                        align: 'center',
+                        fixed: 'right',
                     }
                 ],
                 data6: [],
@@ -60,6 +64,7 @@
                 page: 1,
                 count: 10,
                 total: 0,
+                contentScollerHeight: (window.innerHeight - 220),
             }
         },
         methods: {
@@ -68,10 +73,12 @@
                 this.$router.push({path: '/bannerDetail', query: {id: id}})
             },
             remove(id, index) {
-                http.fetchDelete("/v1/banner/" + id).then(() => {
+                http.fetchDelete("/v1/banner/" + id).then((res) => {
                     this.data6.splice(index, 1);
+                    this.$Message.success(res.data.message)
                 }).catch(err => {
                     console.log(err)
+                    this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
             onPageChange(page) {
@@ -90,7 +97,7 @@
                     this.total = res.total;
                     this.data6 = res.items
                 }).catch(err => {
-                    console.log(err)
+                    this.$Message.error(JSON.stringify(err.response.data.message))
                 })
                 this.loading = false
             },

@@ -75,7 +75,6 @@
                 menuItemName: String,
                 names: Array,
                 breadList: Array,
-                headTags: [],
                 headTagChecked: Boolean,
                 sharedState: store.state,
                 contentScollerHeight: (window.innerHeight - 140),
@@ -152,55 +151,15 @@
                 return route.name === "home";
             },
             getBreadcrumb() {
-                let concat = false;
                 let matched = this.$route.matched;
                 if (!this.isHome(matched[0])) {
                     matched = [{path: "/home", meta: {title: "首页"}}].concat(matched);
                 }
                 this.breadList = matched;
-                for (let i = 0; i < this.headTags.length; i++) {
-                    this.headTags[i].checked = false;
-                    let tem = this.headTags[i].name === (matched[matched.length - 1].meta.title);
-                    if (tem) {
-                        concat = true
-                        this.headTags[i].checked = true
-                    }
-
-                }
-                if (!concat) {
-                    let tagObj = {
-                        name: String,
-                        checked: Boolean
-                    }
-                    if (matched.length - 1 != 0) {
-                        tagObj.name = matched[matched.length - 1].meta.title;
-                        tagObj.checked = true;
-                        this.headTags.push(tagObj);
-                    }
-
-                }
-                // this.initTabs(this.headTags[this.headTags.length - 1].name)
-            },
-            onCloseHeardTag(event, name) {
-                console.log(this.headTags)
-                let index = 0;
-                for (let i = 0; i < this.headTags.length; i++) {
-                    if (this.headTags[i].name == name) {
-                        index = i
-                    }
-                }
-                console.log(index)
-                this.headTags.splice(index, 1);
-                if (this.headTags.length !== 0) {
-                    this.headTags[this.headTags.length - 1].checked = true
-                }
-                this.onChangeHeadTag(true, this.headTags[this.headTags.length - 1].name)
-
-            },
-            onChangeHeadTag(checked, name) {
-                console.log(name)
-                console.log(checked)
-                this.onClickBannerList(name)
+                console.log('-----getBreadcrumb---matched----start----')
+                console.log(matched[matched.length-1].meta.title)
+                console.log('-----getBreadcrumb---matched----end----')
+                this.initTabs(matched[matched.length-1].meta.title)
             },
             initTabs(name) {
                 if (this.tabs.indexOf(name) == '-1') {
@@ -230,7 +189,11 @@
                 this.tabs.splice(this.tabs.indexOf(name), 1);
                 console.log(this.tabs)
                 console.log(this.tabs[this.tabs.length-1])
-                this.onClickBannerList(this.tabs[this.tabs.length-1])
+                //当选中的tab与要删除的tab时,切换到第一个tab
+                if(this.tabName == name){
+                    this.onClickBannerList(this.tabs[0])
+                }
+
                 console.log('--------handleTabRemove--end---')
             }
         },

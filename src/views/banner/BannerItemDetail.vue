@@ -39,8 +39,10 @@
                 console.log(this.formBannerItem.id)
                 http.fetchPut("/v1/banner-item/" + this.formBannerItem.id, formBannerItem).then((res) => {
                     console.log(res)
+                    this.$Message.success(res.data.message)
                 }).catch(err => {
                     console.log(err)
+                    this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
             getBannerItem() {
@@ -49,7 +51,7 @@
                     this.formBannerItem = res.data;
                     console.log(this.formBannerItem)
                 }).catch(err => {
-                    console.log(err)
+                    this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
         },

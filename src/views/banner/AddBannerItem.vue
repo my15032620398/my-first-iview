@@ -69,14 +69,12 @@
         methods:{
             addBannerItem(formBannerItem) {
                 const id = this.$route.query.id;
-                console.log(id)
                 formBannerItem.banner_id = id;
-                console.log("----------formBannerItem-----------")
-                console.log(formBannerItem)
                 http.fetchPost("/v1/banner-item", formBannerItem).then((res) => {
                     console.log(res)
+                    this.$Message.success(res.data.message)
                 }).catch(err => {
-                    console.log(err)
+                    this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
             handleView(name) {

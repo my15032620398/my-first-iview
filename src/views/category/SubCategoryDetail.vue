@@ -43,6 +43,7 @@
                 imgName: '',
                 item: {},
             }
+
         },
         methods: {
             initSubCategoryDetail() {

@@ -11,7 +11,7 @@
         <Input v-model="formBannerItem.type" class="formBanner" placeholder="请输入BannerItem的类型"/>
       </FormItem>
       <FormItem label="图片">
-        <img :src="formBannerItem.img" class="mainImg">
+        <UploadFile :uploadList="uploadList" ></UploadFile>
       </FormItem>
       <div class="bannerBut">
         <Button type="primary" class="saveBannerBut" @click="updateBannerItem(formBannerItem)">保存</Button>
@@ -23,20 +23,24 @@
 
 <script>
     import http from "../../request/http";
-
+    import UploadFile from "../../components/UploadFile";
     export default {
         name: "BannerItemDetail",
+        components:{
+            UploadFile
+        },
         data() {
             return {
                 formBannerItem: {},
                 loading: true,
                 bannerItem: Number,
-
+                item: {},
+                uploadList: [],
             }
         },
         methods: {
             updateBannerItem(formBannerItem) {
-                console.log(this.formBannerItem.id)
+                formBannerItem.img = this.uploadList[0].url
                 http.fetchPut("/v1/banner-item/" + this.formBannerItem.id, formBannerItem).then((res) => {
                     console.log(res)
                     this.$Message.success(res.data.message)
@@ -49,10 +53,21 @@
                 const id = this.$route.query.id;
                 http.fetchGet("/v1/banner-item/" + id, null).then((res) => {
                     this.formBannerItem = res.data;
-                    console.log(this.formBannerItem)
+                    this.initSubCategoryDetail()
                 }).catch(err => {
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
+            },
+            initSubCategoryDetail() {
+                console.log('----------initSubCategoryDetail----------')
+                console.log(this.formBanner)
+                this.item.status = 'finished'
+                this.item.url = this.formBanner.img
+                this.item.id = this.formBanner.id
+                this.item.showProgress = true
+                this.item.percentage = 100
+                console.log(this.item)
+                this.uploadList.push(this.item)
             },
         },
         created() {

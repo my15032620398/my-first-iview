@@ -8,7 +8,7 @@
         <Input v-model="formBanner.title" class="formBanner" placeholder="请输入Banner的标题"/>
       </FormItem>
       <FormItem label="图片">
-        <img :src="formBanner.img" class="mainImg">
+        <UploadFile :uploadList="uploadList" ></UploadFile>
       </FormItem>
       <FormItem label="Banner描述">
         <Input v-model="formBanner.description" class="formBanner" placeholder="请输入Banner的描述"/>
@@ -25,7 +25,9 @@
     </div>
     <Table border :columns="columns" :data="data6" :loading="loading">
       <template slot-scope="{ row }" slot="img">
-        <img :src="row.img" class="bannerImg">
+        <div class="i-1">
+          <img :src="row.img" class="bannerImg">
+        </div>
       </template>
       <template slot-scope="{ row,index }" slot="action">
         <Button type="primary" size="small" style="margin-right: 5px" @click="show(row.id)">查看</Button>
@@ -38,9 +40,12 @@
 <script>
     import http from "../../request/http";
     import store from "../../store";
-
+    import UploadFile from "../../components/UploadFile";
     export default {
         name: "BannerDetail",
+        components:{
+            UploadFile
+        },
         data() {
             return {
                 formBanner: {},
@@ -74,26 +79,39 @@
                 ],
                 data6: [],
                 loading: true,
-                bannerId:''
+                bannerId:'',
+                item: {},
+                uploadList: [],
             }
         },
         methods: {
+            initSubCategoryDetail() {
+                console.log('----------initSubCategoryDetail----------')
+                console.log(this.formBanner)
+                this.item.status = 'finished'
+                this.item.url = this.formBanner.img
+                this.item.id = this.formBanner.id
+                this.item.showProgress = true
+                this.item.percentage = 100
+                console.log(this.item)
+                this.uploadList.push(this.item)
+            },
             getBannerWithItemById() {
                 const id = this.$route.query.id;
                 http.fetchGet("/v1/banner/" + id, null).then((res) => {
                     this.formBanner = res.data;
                     this.data6 = res.data.items
-
                     this.loading = false;
+                    this.initSubCategoryDetail()
                 }).catch(err => {
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
             updateBanner(formBanner) {
+                formBanner.img = this.uploadList[0].url
                 http.fetchPut("/v1/banner/"+formBanner.id, formBanner).then((res) => {
                     this.$Message.success(res.data.message)
                 }).catch(err => {
-                    console.log(err)
                     this.$Message.error(err.response.data.message)
                 })
             },
@@ -115,7 +133,7 @@
             }
         },
         created() {
-            this.getBannerWithItemById();
+            this.getBannerWithItemById()
         }
     }
 </script>
@@ -157,11 +175,22 @@
     padding-right: 10px;
     padding-bottom: 20px;
   }
-
   .bannerImg {
-    width: auto;
-    height: auto;
-    max-width: 30%;
-    max-height: 30%;
+    width: 100%;
+    height: 100%;
+  }
+  .i-1 {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+    margin-right: 4px;
   }
 </style>

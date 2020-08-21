@@ -8,6 +8,7 @@ import AddBannerItem from "./views/banner/AddBannerItem";
 import SubCategoryList from "./views/category/SubCategoryList";
 import SubCategoryDetail from "./views/category/SubCategoryDetail";
 import AddCategory from "./views/category/AddCategory";
+import GridCategoryList from "./views/grid-category/GridCategoryList";
 const routers = [
     {
         path: '/',
@@ -68,6 +69,12 @@ const routers = [
                 name:'addCategory',
                 meta:{title:'添加子分类'},
                 component:AddCategory
+            },
+            {
+                path:'/gridCategoryList',
+                name:'gridCategoryList',
+                meta:{title:'六宫格列表'},
+                component:GridCategoryList
             }
         ]
     },

@@ -28,6 +28,16 @@
               分类列表
             </menu-item>
           </Submenu>
+          <Submenu name="3">
+            <template slot="title">
+              <Icon type="ios-paper"/>
+             六宫格管理
+            </template>
+            <menu-item name="六宫格列表">
+              <Icon type="ios-link"/>
+              六宫格列表
+            </menu-item>
+          </Submenu>
         </Menu>
 
       </Sider>
@@ -109,8 +119,8 @@
                 this.$refs.side1.toggleCollapse();
             },
             onClickBannerList(name) {
+                console.log(name)
                 this.initTabs(name);
-                console.log('11111111111111111111')
                 switch (name) {
                     case 'Banner列表':
                         this.$router.push('/bannerList');
@@ -141,6 +151,9 @@
                         break
                     case '添加子分类':
                         this.$router.push('/addSubCategory')
+                        break
+                    case '六宫格列表':
+                        this.$router.push('/gridCategoryList')
                         break
                     default:
                         this.$router.push('/')

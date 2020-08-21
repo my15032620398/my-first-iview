@@ -39,7 +39,6 @@
             </menu-item>
           </Submenu>
         </Menu>
-
       </Sider>
       <Layout>
         <Header :style="{padding: 0}" class="layout-header-bar">

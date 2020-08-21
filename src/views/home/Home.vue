@@ -33,7 +33,6 @@
               <Icon type="ios-paper"/>
              六宫格管理
             </template>
-
             <menu-item name="六宫格列表">
               <Icon type="ios-link"/>
               六宫格列表

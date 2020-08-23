@@ -35,7 +35,7 @@
 </template>
 
 <script>
-  import http from "../request/http";
+  //import http from "../request/http";
     export default {
         name: "UploadFile",
         props: {
@@ -43,7 +43,6 @@
         },
         data() {
           return{
-              subCategoryData: {},
               visible: false,
               imgName: '',
               item: {},
@@ -55,13 +54,12 @@
                 this.visible = true;
             },
             handleRemove(file) {
-                const url = file.url;
-                const name = url.substring(url.lastIndexOf('/')+1,url.length)
-                http.fetchDelete("/cms/file/byName/"+name,null).then(()=>{
-                }).catch(err=>{
-                    console.log(err)
-                })
-                this.subCategoryData.img = null;
+                //const url = file.url;
+                //const name = url.substring(url.lastIndexOf('/')+1,url.length)
+                // http.fetchDelete("/cms/file/byName/"+name,null).then(()=>{
+                // }).catch(err=>{
+                //     console.log(err)
+                // })
                 this.uploadList.splice(this.uploadList.indexOf(file),1);
             },
             handleSuccess(res, file) {
@@ -71,7 +69,6 @@
                 this.item.id = res[0].id
                 this.item.showProgress = file.showProgress
                 this.item.percentage = file.percentage
-                this.subCategoryData.img = res[0].url
                 this.uploadList.push(this.item)
             },
             handleFormatError(file) {

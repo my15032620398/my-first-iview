@@ -3,7 +3,8 @@ let store = {
         bannerId: Number,
         bannerItemId:Number,
         categoryRootId:Number,
-        subCategoryDetail:Object
+        subCategoryDetail:Object,
+        gridCategoryDetail:Object
     },
     setBannerId (newValue) {
         this.state.bannerId = newValue
@@ -16,6 +17,9 @@ let store = {
     },
     setSubCategoryDetail(newValue){
         this.state.subCategoryDetail = newValue
+    },
+    setTempGridCategoryData(newValue){
+        this.state.gridCategoryDetail = newValue
     }
 }
 export default store

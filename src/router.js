@@ -9,6 +9,8 @@ import SubCategoryList from "./views/category/SubCategoryList";
 import SubCategoryDetail from "./views/category/SubCategoryDetail";
 import AddCategory from "./views/category/AddCategory";
 import GridCategoryList from "./views/grid-category/GridCategoryList";
+import EditGridCategotry from "./views/grid-category/EditGridCategotry";
+import HomeGridCategory from "./views/grid-category/HomeGridCategory";
 const routers = [
     {
         path: '/',
@@ -71,12 +73,33 @@ const routers = [
                 component:AddCategory
             },
             {
-                path:'/gridCategoryList',
-                name:'gridCategoryList',
-                meta:{title:'六宫格列表'},
-                component:GridCategoryList
-            }
+                path:'/homeGridCategory',
+                name:'homeGridCategory',
+                meta:{title:'六宫格管理'},
+                component:HomeGridCategory,
+                children:[
+                    {
+                        path:'/gridCategoryList',
+                        name:'gridCategoryList',
+                        meta:{title:'六宫格列表'},
+                        component:GridCategoryList,
+                    },
+                    {
+                        path:'/editGridCategory',
+                        name:'editGridCategory',
+                        meta:{title:'更新六宫格'},
+                        component:EditGridCategotry
+                    },
+                    {
+                        path:'/addGridCategory',
+                        name:'addGridCategory',
+                        meta:{title:'添加六宫格'},
+                        component:EditGridCategotry
+                    },
+                ]
+            },
         ]
     },
+
 ];
 export default routers;

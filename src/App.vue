@@ -16,12 +16,9 @@
         },
         methods:{
             getHeight() {
-                console.log(11111)
-                console.log(window.innerHeight)
                 this.conheight.height = window.innerHeight - 170 + 'px';
             },
             created() {
-                console.log(22222)
                 window.addEventListener('resize', this.getHeight);
                 this.getHeight()
 

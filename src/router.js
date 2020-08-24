@@ -11,6 +11,9 @@ import AddCategory from "./views/category/AddCategory";
 import GridCategoryList from "./views/grid-category/GridCategoryList";
 import EditGridCategotry from "./views/grid-category/EditGridCategotry";
 import HomeGridCategory from "./views/grid-category/HomeGridCategory";
+import HomeSpu from "./views/spu/HomeSpu";
+import SpuList from "./views/spu/SpuList";
+import EditSpu from "./views/spu/EditSpu";
 const routers = [
     {
         path: '/',
@@ -98,6 +101,26 @@ const routers = [
                     },
                 ]
             },
+            {
+                path:'/homeSpu',
+                name:'homeSpu',
+                meta:{title:'SPU管理'},
+                component:HomeSpu,
+                children:[
+                    {
+                        path:'/spuList',
+                        name:'spuList',
+                        meta:{title:'SPU列表'},
+                        component:SpuList
+                    },
+                    {
+                        path:'/editSpu',
+                        name:'editSpu',
+                        meta:{title:'更新SPU'},
+                        component:EditSpu
+                    }
+                ]
+            }
         ]
     },
 

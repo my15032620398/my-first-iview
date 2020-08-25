@@ -78,7 +78,7 @@
                     this.data6 = res.data
                     this.loading = false
                 }).catch(err => {
-                    this.$Message.error(err.response.data.message)
+                    this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
             addGridCategory() {

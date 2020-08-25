@@ -38,6 +38,20 @@
                             六宫格列表
                         </menu-item>
                     </Submenu>
+                    <Submenu name="4">
+                        <template slot="title">
+                            <Icon type="ios-paper"/>
+                            规格管理
+                        </template>
+                        <menu-item name="添加规格名">
+                            <Icon type="ios-link"/>
+                            添加规格名
+                        </menu-item>
+                        <menu-item name="规格名列表">
+                            <Icon type="ios-link"/>
+                            规格名列表
+                        </menu-item>
+                    </Submenu>
                     <Submenu name="5">
                         <template slot="title">
                             <Icon type="ios-paper"/>
@@ -100,7 +114,7 @@
                 contentScollerHeight: (window.innerHeight - 140),
                 tabs: [],
                 tabName: '',
-                mainRouter:['六宫格列表','SPU列表']
+                mainRouter:['六宫格列表','添加规格名','规格名列表','SPU列表']
             }
         },
         computed: {
@@ -166,11 +180,14 @@
                     case '六宫格列表':
                         this.$router.push('/gridCategoryList')
                         break
+                    case '添加规格名':
+                        this.$router.push('/addSpecKey')
+                        break
+                    case '规格名列表':
+                        this.$router.push('/specKeyList')
+                        break
                     case 'SPU列表':
                         this.$router.push('/spuList')
-                        break
-                    case '更新SPU':
-                        this.$router.push({path: '/editSpu', query: {data: this.sharedState.spuDetail}})
                         break
                     default:
                         this.$router.push('/')

@@ -5,7 +5,8 @@ let store = {
         categoryRootId:Number,
         subCategoryDetail:Object,
         gridCategoryDetail:Object,
-        spuDetail:Object
+        spuDetail:Object,
+        specKeyDetail:Object
     },
     setBannerId (newValue) {
         this.state.bannerId = newValue
@@ -22,8 +23,11 @@ let store = {
     setTempGridCategoryData(newValue){
         this.state.gridCategoryDetail = newValue
     },
-    setSpuDetail(newValue){
+    setSpuDetail(newValue) {
         this.state.spuDetail = newValue
+    },
+    setSpecKeyDetail(newValue){
+        this.state.specKeyDetail = newValue
     }
 }
 export default store

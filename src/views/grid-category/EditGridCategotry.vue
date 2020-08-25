@@ -4,7 +4,7 @@
             <div class="h-1-1">
                 {{addOrUpdate?'新建宫格':'更新宫格'}}
             </div>
-            <Button type="primary" icon="ios-undo" @click="back">返回</Button>
+            <Button type="text" icon="ios-undo" @click="back" ghost class="b-1">返回</Button>
         </div>
         <Form :model="gridCategoryData " label-position="left" :label-width="100">
             <FormItem label="宫格主题">
@@ -140,5 +140,8 @@
     }
     .h-1-1{
         color: #6739ff;
+    }
+    .b-1{
+        color: #2c3e50;
     }
 </style>

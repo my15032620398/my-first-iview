@@ -1,8 +1,12 @@
 <template>
   <div class="sv-1">
-    <div class="sv-title">
-      {{title}}
+    <div class="sv-0">
+      <div class="sv-title">
+        {{title}}
+      </div>
+      <Button type="text" icon="ios-undo" @click="back" ghost class="b-1">返回</Button>
     </div>
+
     <Form :model="specValueData " label-position="left" :label-width="100">
       <FormItem label="规格名名称">
         <Input v-model="specValueData.value" class="form" placeholder="请输入规格值名称"/>
@@ -20,6 +24,7 @@
 
 <script>
   import http from "../../request/http";
+  import store from "../../store";
     export default {
         name: "AddOrUpdateSpecValue",
         data() {
@@ -59,7 +64,12 @@
                         this.$Message.error(JSON.stringify(err.response.data.message))
                     })
                 }
+            },
+            back(){
+                const res = store.state.specKeyDetail
+                this.$router.push({path:'/editSpecKey',query: {data:res}})
             }
+
         },
         created() {
             this.initData()
@@ -85,5 +95,16 @@
   }
   .form {
     width: 550px;
+  }
+  .sv-0{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    justify-items: center;
+    padding-bottom: 20px;
+  }
+  .b-1{
+    color: #2c3e50;
   }
 </style>

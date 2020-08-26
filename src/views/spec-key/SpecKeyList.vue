@@ -64,7 +64,7 @@
                 loading: true,
                 page: 1,
                 count: 10,
-                total: 0
+                total: 0,
             }
         },
         methods: {
@@ -82,9 +82,6 @@
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
-            addGridCategory() {
-
-            },
             remove(id,index) {
                 http.fetchDelete('/v1/spec-key/' + id, null).then((res => {
                     this.data6.splice(index, 1);
@@ -101,6 +98,8 @@
                 this.page = page;
                 this.initSpecKey();
             },
+        },
+        computed:{
         },
         created() {
             this.initSpecKey()

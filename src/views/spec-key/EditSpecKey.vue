@@ -93,7 +93,6 @@
                 let param = {}
                 param.specId = this.specId;
                 param.flg  = 1;
-                console.log(param)
                 this.$router.push({path: '/updateSpecValue', query: {data: param}})
             }
         },

@@ -1,8 +1,12 @@
 <template>
   <div class="sk-1">
-    <div class="sk-title" v-if="addOrUpdateFlag=='2'">
-      {{title}}
+    <div class="sk-0" v-if="addOrUpdateFlag=='2'">
+      <div class="sk-title" >
+        {{title}}
+      </div>
+      <Button type="text" icon="ios-undo" @click="back" ghost class="b-1">返回</Button>
     </div>
+
     <Form :model="specKeyData " label-position="left" :label-width="100">
       <FormItem label="规格名名称">
         <Input v-model="specKeyData.name" class="form" placeholder="请输入规格名称"/>
@@ -44,6 +48,7 @@
         methods: {
             initData(){
               const initData = this.$route.query.data;
+                console.log(initData)
               if(initData){
                   this.addOrUpdateFlag = 2
                   this.title = '修改规格名'
@@ -106,6 +111,17 @@
     padding-bottom: 20px;
   }
   .sk-2{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    justify-items: center;
+    padding-bottom: 20px;
+  }
+  .b-1{
+    color: #2c3e50;
+  }
+  .sk-0{
     display:flex;
     flex-direction: row;
     justify-content: space-between;

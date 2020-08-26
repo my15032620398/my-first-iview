@@ -23,6 +23,9 @@
                 <Page :total="total" :current="page" :page-size="count" @on-change="onPageChange"></Page>
             </div>
         </div>
+        <BackTop :height="1" :bottom="200">
+            <div class="top">返回顶端</div>
+        </BackTop>
     </div>
 </template>
 
@@ -174,5 +177,12 @@
         align-content: center;
         justify-items: center;
         justify-content: center;
+    }
+    .top {
+        padding: 10px;
+        background: rgba(0, 153, 229, .7);
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
     }
 </style>

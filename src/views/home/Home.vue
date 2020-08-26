@@ -1,99 +1,102 @@
 <template>
     <div class="layout">
-        <Layout>
-            <Sider ref="side1" hide-trigger collapsible :collapsed-width="78" v-model="isCollapsed"
-                   :style="{height:scrollerHeight}">
-                <Menu theme="dark" width="auto" :class="menuitemClasses" @on-select="onClickBannerList">
-                    <Submenu name="1">
-                        <template slot="title">
-                            <Icon type="ios-paper"/>
-                            Banner管理
-                        </template>
-                        <menu-item name="Banner列表">
-                            <Icon type="ios-link"/>
-                            Banner列表
-                        </menu-item>
-                        <menu-item name="添加Banner">
-                            <Icon type="md-leaf"/>
-                            添加Banner
-                        </menu-item>
-                    </Submenu>
-                    <Submenu name="2">
-                        <template slot="title">
-                            <Icon type="ios-paper"/>
-                            分类管理
-                        </template>
-                        <menu-item name="分类列表">
-                            <Icon type="ios-link"/>
-                            分类列表
-                        </menu-item>
-                    </Submenu>
-                    <Submenu name="3">
-                        <template slot="title">
-                            <Icon type="ios-paper"/>
-                            六宫格管理
-                        </template>
-                        <menu-item name="六宫格列表">
-                            <Icon type="ios-link"/>
-                            六宫格列表
-                        </menu-item>
-                    </Submenu>
-                    <Submenu name="4">
-                        <template slot="title">
-                            <Icon type="ios-paper"/>
-                            规格管理
-                        </template>
-                        <menu-item name="添加规格名">
-                            <Icon type="ios-link"/>
-                            添加规格名
-                        </menu-item>
-                        <menu-item name="规格名列表">
-                            <Icon type="ios-link"/>
-                            规格名列表
-                        </menu-item>
-                    </Submenu>
-                    <Submenu name="5">
-                        <template slot="title">
-                            <Icon type="ios-paper"/>
-                            SPU管理
-                        </template>
-                        <menu-item name="SPU列表">
-                            <Icon type="ios-link"/>
-                            SPU列表
-                        </menu-item>
-                    </Submenu>
-                </Menu>
+            <Layout class="h-1">
+                <scroll :height="hHeight" >
+                    <Sider ref="side1" hide-trigger collapsible :collapsed-width="78" v-model="isCollapsed"
+                           :style="{height:scrollerHeight}" style="{padding-top: 0;padding-bottom:0}">
+                        <Menu theme="dark" width="auto" :class="menuitemClasses" @on-select="onClickBannerList">
+                            <Submenu name="1">
+                                <template slot="title">
+                                    <Icon type="ios-paper"/>
+                                    Banner管理
+                                </template>
+                                <menu-item name="Banner列表">
+                                    <Icon type="ios-link"/>
+                                    Banner列表
+                                </menu-item>
+                                <menu-item name="添加Banner">
+                                    <Icon type="md-leaf"/>
+                                    添加Banner
+                                </menu-item>
+                            </Submenu>
+                            <Submenu name="2">
+                                <template slot="title">
+                                    <Icon type="ios-paper"/>
+                                    分类管理
+                                </template>
+                                <menu-item name="分类列表">
+                                    <Icon type="ios-link"/>
+                                    分类列表
+                                </menu-item>
+                            </Submenu>
+                            <Submenu name="3">
+                                <template slot="title">
+                                    <Icon type="ios-paper"/>
+                                    六宫格管理
+                                </template>
+                                <menu-item name="六宫格列表">
+                                    <Icon type="ios-link"/>
+                                    六宫格列表
+                                </menu-item>
+                            </Submenu>
+                            <Submenu name="4">
+                                <template slot="title">
+                                    <Icon type="ios-paper"/>
+                                    规格管理
+                                </template>
+                                <menu-item name="添加规格名">
+                                    <Icon type="ios-link"/>
+                                    添加规格名
+                                </menu-item>
+                                <menu-item name="规格名列表">
+                                    <Icon type="ios-link"/>
+                                    规格名列表
+                                </menu-item>
+                            </Submenu>
+                            <Submenu name="5">
+                                <template slot="title">
+                                    <Icon type="ios-paper"/>
+                                    SPU管理
+                                </template>
+                                <menu-item name="SPU列表">
+                                    <Icon type="ios-link"/>
+                                    SPU列表
+                                </menu-item>
+                            </Submenu>
+                        </Menu>
 
-            </Sider>
-            <Layout>
-                <Header :style="{padding: 0}" class="layout-header-bar">
-                    <div class="layout-header-bar-on">
-                        <div class="headOnComponet">
-                            <Icon @click.native="collapsedSider" :class="rotateIcon" class="i-icon" type="md-menu"
-                                  size="24">
-                            </Icon>
-                            <Breadcrumb>
-            <span v-for="(item,index) in breadList" :key="index">
-              <BreadcrumbItem>{{item.meta.title}}</BreadcrumbItem>
-            </span>
-                            </Breadcrumb>
+                    </Sider>
+                </scroll>
+                <Layout>
+                    <Header :style="{padding: 0}" class="layout-header-bar">
+                        <div class="layout-header-bar-on">
+                            <div class="headOnComponet">
+                                <Icon @click.native="collapsedSider" :class="rotateIcon" class="i-icon" type="md-menu"
+                                      size="24">
+                                </Icon>
+                                <Breadcrumb>
+                                <span v-for="(item,index) in breadList" :key="index">
+                                  <BreadcrumbItem>{{item.meta.title}}</BreadcrumbItem>
+                                </span>
+                                </Breadcrumb>
+                            </div>
                         </div>
-                    </div>
 
-                </Header>
-                <content class="c-1">
-                    <template>
-                        <Tabs type="card" @on-click="onChangeTabs" :value="tabName" @on-tab-remove="handleTabRemove">
-                            <TabPane v-for="tab in tabs" :key="tab" :label='tab' type="card" closable :name="tab">
-                            </TabPane>
-                        </Tabs>
-                    </template>
-                    <Scroll :height="contentScollerHeight">
-                        <router-view></router-view>
-                    </Scroll>
-                </content>
+                    </Header>
+                    <content class="c-1">
+                        <template>
+                            <Tabs type="card" @on-click="onChangeTabs" :value="tabName"
+                                  @on-tab-remove="handleTabRemove">
+                                <TabPane v-for="tab in tabs" :key="tab" :label='tab' type="card" closable :name="tab">
+                                </TabPane>
+                            </Tabs>
+                        </template>
+                        <Scroll :height="contentScollerHeight">
+                            <router-view></router-view>
+                        </Scroll>
+                    </content>
+                </Layout>
             </Layout>
-        </Layout>
     </div>
 </template>
 
@@ -112,9 +115,10 @@
                 headTagChecked: Boolean,
                 sharedState: store.state,
                 contentScollerHeight: (window.innerHeight - 140),
+                hHeight: window.outerHeight,
                 tabs: [],
                 tabName: '',
-                mainRouter:['六宫格列表','添加规格名','规格名列表','SPU列表']
+                mainRouter: ['六宫格列表', '添加规格名', '规格名列表', 'SPU列表']
             }
         },
         computed: {
@@ -131,7 +135,7 @@
                 ]
             },
             scrollerHeight() {
-                return (window.innerHeight - 1) + 'px'
+                return (window.outerHeight) + 'px'
             },
         },
         watch: {
@@ -195,15 +199,15 @@
                 }
             },
             isHome(route) {
-                return route.name === "home" ;
+                return route.name === "home";
             },
             getBreadcrumb() {
                 let matched = this.$route.matched;
-                if (!this.isHome(matched[0]) ) {
+                if (!this.isHome(matched[0])) {
                     matched = [{path: "/home", meta: {title: "首页"}}].concat(matched);
                 }
                 this.breadList = matched;
-                if(!this.mainRouter.includes(matched[matched.length - 1].meta.title)){
+                if (!this.mainRouter.includes(matched[matched.length - 1].meta.title)) {
                     return
                 }
                 this.initTabs(matched[matched.length - 1].meta.title)
@@ -249,6 +253,7 @@
         position: relative;
         border-radius: 4px;
         overflow: hidden;
+        height: 100%;
     }
 
     .layout-header-bar {
@@ -269,21 +274,9 @@
         display: flex;
         flex-direction: row;
     }
-
-    .layout-logo-left {
-        width: 90%;
-        height: 30px;
-        background: #5b6270;
-        border-radius: 3px;
-        margin: 15px auto;
-    }
-
-    .menu-icon {
-        transition: all .3s;
-    }
-
-    .rotate-icon {
-        transform: rotate(-90deg);
+    .h-1{
+        display: flex;
+        flex-direction: row;
     }
 
     .menu-item span {
@@ -335,5 +328,13 @@
 
     .c-1 {
         padding: 10px 10px 10px 10px;
+    }
+
+    .top {
+        padding: 10px;
+        background: rgba(0, 153, 229, .7);
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
     }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="sp-0">
         <div class="t-1">
             <div class="t-1-1">SPU列表</div>
             <Button type="primary" @click="addSPU">添加SPU</Button>
@@ -23,9 +23,6 @@
                 <Page :total="total" :current="page" :page-size="count" @on-change="onPageChange"></Page>
             </div>
         </div>
-        <BackTop :height="1" :bottom="200">
-            <div class="top">返回顶端</div>
-        </BackTop>
     </div>
 </template>
 
@@ -129,7 +126,7 @@
             },
             addSPU() {
                 this.$router.push('/addSpu')
-            }
+            },
         },
         created() {
             this.initData();

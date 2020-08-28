@@ -2,7 +2,7 @@
     <div class="gc-1">
         <div class="h-1">
             <div class="h-1-1">
-                {{addOrUpdate?'新建宫格':'更新宫格'}}
+                {{addOrUpdate?'新建SPU':'更新SPU'}}
             </div>
             <Button type="primary" icon="ios-undo" @click="back">返回</Button>
         </div>
@@ -37,7 +37,7 @@
                 <UploadFile :uploadList="themeUploadList"></UploadFile>
             </FormItem>
             <FormItem label="轮播图">
-                <UploadFile :uploadList="slideshowUploadList"></UploadFile>
+                <UploadFile :uploadList="slideShowUploadList"></UploadFile>
             </FormItem>
             <FormItem label="详情图">
                 <UploadFile :uploadList="detailUploadList"></UploadFile>
@@ -46,7 +46,7 @@
                 <Tag v-for="item in tags" :key="item" :name="item" closable @on-close="handleCloseTag">item</Tag>
             </FormItem>
             <div class="gridCategoryBut">
-                <Button type="primary" class="saveGridCategoryBut" @click="addOrUpdate?addGridCategory(gridCategoryData):updateGridCategory(gridCategoryData)">保存
+                <Button type="primary" class="saveGridCategoryBut" @click="addOrUpdate?addGridCategory(spuData):updateGridCategory(spuData)">保存
                 </Button>
                 <Button html-type="reset">重置</Button>
             </div>
@@ -56,22 +56,36 @@
 
 <script>
     import http from "../../request/http";
-
+    import UploadFile from "../../components/UploadFile";
+    import ImgUtil from "../../utils/ImgUtil";
     export default {
         name: "EditSpu",
+        components:{
+            UploadFile
+        },
         data(){
             return{
                 spuData:{},
-                tags:[]
+                tags:[],
+                addOrUpdate:true,
+                mainUploadList:[],
+                themeUploadList:[],
+                slideShowUploadList:[],
+                detailUploadList:[],
+                item:{}
             }
         },
         methods:{
             initData(){
                 const id = this.$route.query.data;
+                if(id){
+                    this.addOrUpdate=false;
+                }
                 http.fetchGet('/v1/spu/'+id+'/detail').then((res)=>{
                     console.log(res)
-                    this.spuData = res.data;
+                    this.dealData(res);
                 }).catch(err=>{
+                    console.log(err)
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
                 console.log(this.spuData)
@@ -81,7 +95,39 @@
             },
             handleCloseTag(){
 
+            },
+            dealData(res) {
+                this.spuData = res.data
+                this.initMainImg()
+                this.initThemeImg()
+                this.initSlideShowImg()
+                this.initDetailImg()
+            },
+            initMainImg() {
+                const name = ImgUtil.spliceImgName(this.spuData.img);
+                this.item.name = name
+                this.item.status = 'finished'
+                this.item.url = this.spuData.img
+                this.item.showProgress = true
+                this.item.percentage = 100
+                this.mainUploadList.push(this.item)
+            },
+            initThemeImg() {
+
+            },
+            initSlideShowImg() {
+
+            },
+            initDetailImg() {
+
+            },
+            addGridCategory(data){
+                console.log(data)
+            },
+            updateGridCategory(data){
+                console.log(data)
             }
+
         },
         created() {
             this.initData()

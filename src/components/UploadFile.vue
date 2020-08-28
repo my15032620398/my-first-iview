@@ -29,14 +29,16 @@
       </div>
     </Upload>
     <Modal title="View Image" v-model="visible">
-      <img :src="this.item.url" v-if="visible" style="width: 100%">
+      <img :src="view_url" v-if="visible" style="width: 100%">
     </Modal>
   </div>
 </template>
 
 <script>
   //import http from "../request/http";
-    export default {
+    import ImgUtil from "../utils/ImgUtil";
+
+  export default {
         name: "UploadFile",
         props: {
             uploadList:Array
@@ -44,22 +46,17 @@
         data() {
           return{
               visible: false,
-              imgName: '',
               item: {},
+              view_url:''
             }
         },
         methods: {
             handleView(name) {
-                this.imgName = name;
+                const url = ImgUtil.findImgUrl(this.uploadList,name);
+                this.view_url = url
                 this.visible = true;
             },
             handleRemove(file) {
-                //const url = file.url;
-                //const name = url.substring(url.lastIndexOf('/')+1,url.length)
-                // http.fetchDelete("/cms/file/byName/"+name,null).then(()=>{
-                // }).catch(err=>{
-                //     console.log(err)
-                // })
                 this.uploadList.splice(this.uploadList.indexOf(file),1);
             },
             handleSuccess(res, file) {
@@ -92,6 +89,8 @@
                 }
                 return !check;
             }
+        },
+        created() {
         }
     }
 </script>

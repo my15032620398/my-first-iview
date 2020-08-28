@@ -40,6 +40,7 @@
 <script>
     import UploadFile from "../../components/UploadFile";
     import http from "../../request/http";
+    import ImgUtil from "../../utils/ImgUtil";
 
     export default {
         name: "EditGridCategotry",
@@ -79,6 +80,8 @@
 
             },
             initUpLoadImg() {
+                const name = ImgUtil.spliceImgName(this.gridCategoryData.img);
+                this.item.name = name
                 this.item.status = 'finished'
                 this.item.url = this.gridCategoryData.img
                 this.item.id = this.gridCategoryData.id

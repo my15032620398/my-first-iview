@@ -29,6 +29,7 @@
 <script>
     import http from "../../request/http";
     import UploadFile from "../../components/UploadFile";
+    import ImgUtil from "../../utils/ImgUtil";
     export default {
         name: "SubCategoryDetail",
         components:{
@@ -47,11 +48,10 @@
         },
         methods: {
             initSubCategoryDetail() {
+                const name = ImgUtil.spliceImgName(this.subCategoryData.img);
+                this.item.name = name
                 this.subCategoryData = this.$route.query.data
                 this.item.status = 'finished'
-                console.log("------------url-----------")
-                console.log(this.subCategoryData)
-                console.log(this.subCategoryData.img)
                 this.item.url = this.subCategoryData.img
                 this.item.id = this.subCategoryData.id
                 this.item.showProgress = true

@@ -24,6 +24,7 @@
 <script>
     import http from "../../request/http";
     import UploadFile from "../../components/UploadFile";
+    import ImgUtil from "../../utils/ImgUtil";
     export default {
         name: "BannerItemDetail",
         components:{
@@ -52,6 +53,7 @@
             getBannerItem() {
                 const id = this.$route.query.id;
                 http.fetchGet("/v1/banner-item/" + id, null).then((res) => {
+                    console.log(res)
                     this.formBannerItem = res.data;
                     this.initSubCategoryDetail()
                 }).catch(err => {
@@ -59,14 +61,13 @@
                 })
             },
             initSubCategoryDetail() {
-                console.log('----------initSubCategoryDetail----------')
-                console.log(this.formBanner)
+                const name = ImgUtil.spliceImgName(this.formBannerItem.img);
                 this.item.status = 'finished'
-                this.item.url = this.formBanner.img
-                this.item.id = this.formBanner.id
+                this.item.url = this.formBannerItem.img
+                this.item.id = this.formBannerItem.id
+                this.item.name = name
                 this.item.showProgress = true
                 this.item.percentage = 100
-                console.log(this.item)
                 this.uploadList.push(this.item)
             },
         },

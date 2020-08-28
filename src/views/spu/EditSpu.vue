@@ -104,6 +104,7 @@
                 this.initDetailImg()
             },
             initMainImg() {
+
                 const name = ImgUtil.spliceImgName(this.spuData.img);
                 this.item.name = name
                 this.item.status = 'finished'

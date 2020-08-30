@@ -2,7 +2,7 @@
   <div class="bannerDetailContainer">
     <Form :model="formBanner" label-position="left" :label-width="100">
       <FormItem label="名称">
-        <Input v-model="formBanner.name" class="formBanner" placeholder="请输入Banner的名称"/>
+        <Input :autofocus=true v-model="formBanner.name" class="formBanner" placeholder="请输入Banner的名称"/>
       </FormItem>
       <FormItem label="标题">
         <Input v-model="formBanner.title" class="formBanner" placeholder="请输入Banner的标题"/>

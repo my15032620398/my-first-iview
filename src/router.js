@@ -22,7 +22,7 @@ import AddOrUpdateSpecValue from "./views/spec-key/AddOrUpdateSpecValue";
 
 const routers = [
     {
-        path: '/',
+        path: '',
         name: 'home',
         component: Home,
         meta: {title: '首页'},

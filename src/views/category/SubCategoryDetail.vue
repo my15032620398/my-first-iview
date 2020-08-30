@@ -48,9 +48,9 @@
         },
         methods: {
             initSubCategoryDetail() {
+                this.subCategoryData = this.$route.query.data
                 const name = ImgUtil.spliceImgName(this.subCategoryData.img);
                 this.item.name = name
-                this.subCategoryData = this.$route.query.data
                 this.item.status = 'finished'
                 this.item.url = this.subCategoryData.img
                 this.item.id = this.subCategoryData.id

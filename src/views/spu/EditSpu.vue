@@ -22,8 +22,14 @@
             <FormItem label="分类">
                 <Input v-model="spuData.category_name" placeholder="请输入分类" class="form"/>
             </FormItem>
+<!--            <FormItem label="默认SKU">-->
+<!--                <Input v-model="spuData.default_sku_title" placeholder="请输入默认SKU" class="form"/>-->
+<!--            </FormItem>-->
             <FormItem label="默认SKU">
-                <Input v-model="spuData.default_sku_id" placeholder="请输入默认SKU" class="form"/>
+                <i-select v-model="default_sku_id" clearable style="width:200px" placeholder="请选择默认SKU">
+                    <i-option v-for="item in skuList"  :value="item.id" :key="item.id">{{ item.id+"-"+item.title }}
+                    </i-option>
+                </i-select>
             </FormItem>
             <FormItem label="是否上架">
                 下架
@@ -47,9 +53,15 @@
                 <Button v-if="addTagFlg" icon="ios-add" type="dashed" size="small" @click="handleAddTag">添加标签</Button>
                 <input  v-else v-model="tagValue" ref="inputs" class="ep-1" @blur="addTag" @keyup.enter="addTag">
             </FormItem>
-            <FormItem label="选择分类">
+            <FormItem label="选择规格">
                 <i-select v-model="specKeyIds" multiple clearable style="width:200px" placeholder="请选择规格(可多选)">
                     <i-option v-for="item in specKeys" :value="item.id" :key="item.id">{{ item.id+"-"+item.name }}
+                    </i-option>
+                </i-select>
+            </FormItem>
+            <FormItem label="可视规格">
+                <i-select v-model="spuData.sketch_spec_id" multiple clearable style="width:200px" placeholder="请选择可视规格">
+                    <i-option v-for="item in sketchItems"  :value="item.sketch_spec_id" :key="item.sketch_spec_id">{{ item.sketch_spec_id+"-"+item.sketch_spec_key_name }}
                     </i-option>
                 </i-select>
             </FormItem>
@@ -98,7 +110,10 @@
                 spuSpecKey:[],
                 specKeyIds:[],
                 skuList:[],
-                updateData:{}
+                updateData:{},
+                flg:false,
+                sketchItems:[],
+                default_sku_id:null
             }
         },
         methods:{
@@ -110,7 +125,6 @@
                 this.getSpuDetail(id)
                 this.getSpuSpecKey(id)
                 this.getSpecKeys()
-
             },
             getSpuDetail(id){
                 http.fetchGet('/v1/spu/'+id+'/detail').then((res)=>{
@@ -136,8 +150,9 @@
                     id:id
                 }
                 http.fetchGet('/v1/spu/key',param).then((res)=>{
-                    this.specKeyIds = res.data
-                    console.log(this.specKeyIds)
+                    for (let i=0;i<res.data.length;i++){
+                        this.specKeyIds.push(res.data[i].id)
+                    }
                 }).catch(err=>{
                     console.log(err)
                     this.$Message.error(JSON.stringify(err.response.data.message))
@@ -146,10 +161,16 @@
             back(){
                 this.$router.push('/spuList')
             },
-
             dealData(res) {
                 this.spuData = res.data
                 console.log(this.spuData)
+                if(this.spuData.sketch_spec_id){
+                    this.flg =true
+                    this.sketchItems.push({
+                        sketch_spec_id:this.spuData.sketch_spec_id,
+                        sketch_spec_key_name:this.spuData.sketch_spec_key_name
+                    })
+                }
                 this.initMainImg()
                 this.initThemeImg()
                 this.initSlideShowImg()
@@ -213,15 +234,6 @@
                     this.detailUploadList.push(dItem)
                 }
             },
-            addSpu(data){
-                console.log(data)
-                console.log(this.specKeyIds)
-            },
-            updateSpu(data){
-                console.log(data)
-                console.log(this.specKeyIds)
-            },
-
             initTags() {
                 this.tags = this.spuData.tags.split('$')
             },
@@ -244,18 +256,20 @@
                 this.addTagFlg = true
                 this.tagValue = null
             },
-                changFocus() {
+            changFocus() {
                 this.$nextTick(() => {   //正确写法
                     this.$refs.inputs.focus();
                 })
             },
-
             getSkuBySpuId(id) {
                 http.fetchGet('/v1/sku/by/spu/'+id).then((res)=>{
                     console.log('----getSkuBySpuId-----')
                     console.log(res)
                     this.skuList = res.data;
-                    this.defaultSku()
+                    console.log('----skuList----')
+                    console.log(this.skuList)
+                    this.default_sku_id = this.spuData.default_sku_id
+                    //this.defaultSku()
 
                 }).catch(err=>{
                     this.$Message.error(JSON.stringify(err.response.data.message))
@@ -269,7 +283,56 @@
                         this.spuData.default_sku_id = skuList[i].title
                     }
                 }
+            },
+            addSpu(data){
+                console.log(data)
+            },
+            updateSpu(data){
+                console.log('------update----')
+                console.log(data)
+                console.log(this.mainUploadList)
+                let strTags = '';
+                let spuImgList = []
+                let spuDetailImgList = []
+                console.log(this.themeUploadList[0])
+                for(let i=0;i<this.detailUploadList.length;i++){
+                    spuDetailImgList.push(this.detailUploadList[i].url)
+                }
+                for(let i=0;i<this.slideShowUploadList.length;i++){
+                    spuImgList.push(this.slideShowUploadList[i].url)
+                }
+                for(let i=0;i<this.tags.length;i++){
+                    if(i==this.tags.length){
+                        return
+                    }
+                    strTags = strTags+this.tags[i]+'$'
+                }
+                strTags = strTags.substr(0,strTags.length-1)
+                let param={
+                    title:data.title,
+                    subtitle:data.subtitle,
+                    img:this.mainUploadList[0].url,
+                    for_theme_img:this.themeUploadList[0].url,
+                    category_id:data.category_id,
+                    online:data.online,
+                    sketch_spec_id:data.sketch_spec_id[0],
+                    default_sku_id:data.default_sku_id,
+                    price:data.price,
+                    discount_price:data.discount_price,
+                    description:data.description,
+                    tags:strTags,
+                    spec_key_id_list:this.specKeyIds,
+                    spu_img_list:spuImgList,
+                    spu_detail_img_list:spuDetailImgList,
+
+                }
+                http.fetchPut('/v1/spu/'+data.id,param).then((res)=>{
+                    this.$Message.success(res.data.message)
+                }).catch(err=>{
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
             }
+
         },
         created() {
             this.initData()

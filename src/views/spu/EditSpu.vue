@@ -20,12 +20,12 @@
                 <Input v-model="spuData.discount_price" placeholder="请输入折扣" class="form"/>
             </FormItem>
             <FormItem label="分类">
-                <Input v-model="spuData.category_name" placeholder="请输入分类" class="form"/>
+                <i-select v-model="category_id" clearable style="width:200px" placeholder="请输入分类">
+                    <i-option v-for="item in category_item"  :value="item.id" :key="item.id">{{ item.id+"-"+item.name }}
+                    </i-option>
+                </i-select>
             </FormItem>
-<!--            <FormItem label="默认SKU">-->
-<!--                <Input v-model="spuData.default_sku_title" placeholder="请输入默认SKU" class="form"/>-->
-<!--            </FormItem>-->
-            <FormItem label="默认SKU">
+            <FormItem label="默认SKU" v-if="!addOrUpdate">
                 <i-select v-model="default_sku_id" clearable style="width:200px" placeholder="请选择默认SKU">
                     <i-option v-for="item in skuList"  :value="item.id" :key="item.id">{{ item.id+"-"+item.title }}
                     </i-option>
@@ -60,16 +60,16 @@
                 </i-select>
             </FormItem>
             <FormItem label="可视规格">
-                <i-select v-model="spuData.sketch_spec_id" multiple clearable style="width:200px" placeholder="请选择可视规格">
-                    <i-option v-for="item in sketchItems"  :value="item.sketch_spec_id" :key="item.sketch_spec_id">{{ item.sketch_spec_id+"-"+item.sketch_spec_key_name }}
+                <i-select v-model="sketch_spec_id" clearable style="width:200px" placeholder="请选择可视规格">
+                    <i-option v-for="item in sketchItems"  :value="item.id" :key="item.id">{{ item.id+"-"+item.name }}
                     </i-option>
                 </i-select>
             </FormItem>
-            <FormItem label="是否测试">
-                非测试
-                <i-switch v-model="spuData.is_test" :true-value=1 :false-value=0 />
-                测试
-            </FormItem>
+<!--            <FormItem label="是否测试">-->
+<!--                非测试-->
+<!--                <i-switch v-model="spuData.is_test" :true-value=1 :false-value=0 />-->
+<!--                测试-->
+<!--            </FormItem>-->
             <FormItem label="描述">
                 <Input v-model="spuData.description" placeholder="请输入描述" class="form"/>
             </FormItem>
@@ -113,28 +113,32 @@
                 updateData:{},
                 flg:false,
                 sketchItems:[],
-                default_sku_id:null
+                default_sku_id:null,
+                sketch_spec_id: null,
+                category_item:[],
+                category_id:null
             }
         },
         methods:{
             initData(){
                 const id = this.$route.query.data;
-                if(id){
-                    this.addOrUpdate=false;
-                }
-                this.getSpuDetail(id)
-                this.getSpuSpecKey(id)
+                this.initCategory();
                 this.getSpecKeys()
+                if(!id){
+                    this.initAddData();
+                    return
+                }else {
+                    this.initUpdateData(id)
+                }
+
+
             },
             getSpuDetail(id){
                 http.fetchGet('/v1/spu/'+id+'/detail').then((res)=>{
-                    console.log(res)
                     this.dealData(res);
                 }).catch(err=>{
-                    console.log(err)
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
-                console.log(this.spuData)
             },
             getSpecKeys() {
                 http.fetchGet('/v1/spec-key/list').then((res)=>{
@@ -164,13 +168,8 @@
             dealData(res) {
                 this.spuData = res.data
                 console.log(this.spuData)
-                if(this.spuData.sketch_spec_id){
-                    this.flg =true
-                    this.sketchItems.push({
-                        sketch_spec_id:this.spuData.sketch_spec_id,
-                        sketch_spec_key_name:this.spuData.sketch_spec_key_name
-                    })
-                }
+                this.category_id = this.spuData.category_id
+                this.initSketchSpecKey()
                 this.initMainImg()
                 this.initThemeImg()
                 this.initSlideShowImg()
@@ -235,6 +234,9 @@
                 }
             },
             initTags() {
+                if(!this.spuData.tags){
+                    return
+                }
                 this.tags = this.spuData.tags.split('$')
             },
             handleCloseTag(event,name){
@@ -284,17 +286,10 @@
                     }
                 }
             },
-            addSpu(data){
-                console.log(data)
-            },
-            updateSpu(data){
-                console.log('------update----')
-                console.log(data)
-                console.log(this.mainUploadList)
+            dealParam(data){
                 let strTags = '';
                 let spuImgList = []
                 let spuDetailImgList = []
-                console.log(this.themeUploadList[0])
                 for(let i=0;i<this.detailUploadList.length;i++){
                     spuDetailImgList.push(this.detailUploadList[i].url)
                 }
@@ -311,12 +306,12 @@
                 let param={
                     title:data.title,
                     subtitle:data.subtitle,
-                    img:this.mainUploadList[0].url,
-                    for_theme_img:this.themeUploadList[0].url,
-                    category_id:data.category_id,
+                    img:this.mainUploadList.length>0?this.mainUploadList[0].url:null,
+                    for_theme_img:this.themeUploadList.length>0?this.themeUploadList[0].url:null,
+                    category_id:this.category_id,
                     online:data.online,
-                    sketch_spec_id:data.sketch_spec_id[0],
-                    default_sku_id:data.default_sku_id,
+                    sketch_spec_id:this.sketch_spec_id,
+                    default_sku_id:this.default_sku_id,
                     price:data.price,
                     discount_price:data.discount_price,
                     description:data.description,
@@ -326,13 +321,92 @@
                     spu_detail_img_list:spuDetailImgList,
 
                 }
+                return param
+            },
+            addSpu(data){
+                const params = this.dealParam(data)
+                console.log(params)
+                http.fetchPost('/v1/spu',params).then((res)=>{
+                    this.$Message.success(res.data.message)
+                }).catch(err=>{
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
+            },
+            updateSpu(data){
+                const param = this.dealParam(data)
                 http.fetchPut('/v1/spu/'+data.id,param).then((res)=>{
                     this.$Message.success(res.data.message)
                 }).catch(err=>{
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
-            }
+            },
+            initSketchSpecKey() {
+                this.watchSpec(this.specKeys);
+                if(this.spuData.sketch_spec_id){
+                    this.sketch_spec_id =this.spuData.sketch_spec_id
+                }
 
+                // const param={
+                //     id:this.spuData.id
+                // }
+                // http.fetchGet('/v1/spu/key',param).then((res)=>{
+                //     console.log('-------initSketchSpecKey--------')
+                //     console.log(res.data)
+                //     for(let i=0;i<res.data.length;i++){
+                //         if(res.data.length<=0){
+                //             return
+                //         }
+                //         this.sketchItems.push(res.data[i])
+                //     }
+                //     console.log('-------sketchItems--------')
+                //     console.log(this.sketchItems)
+                // }).catch(err=>{
+                //     this.$Message.error(JSON.stringify(err.response.data.message))
+                // })
+            },
+            initUpdateData(id) {
+                this.addOrUpdate=false;
+                this.getSpuDetail(id)
+                this.getSpuSpecKey(id)
+            },
+            initAddData() {
+            },
+            initCategory() {
+                http.fetchGet('/v1/category/sub/list').then((res)=>{
+                    console.log('------category---------')
+                    console.log(res.data)
+                    if(res.data.length<=0){
+                        return
+                    }
+                    for(let i=0;i<res.data.length;i++){
+                        this.category_item.push(res.data[i])
+                    }
+                    console.log(this.category_item)
+                }).catch(err=>{
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
+            },
+            watchSpec(newValue){
+                for(let i=0;i<this.specKeys.length;i++){
+                    for(let j=0;j<newValue.length;j++){
+                        if(this.specKeys[i].id == newValue[j]){
+                            if(this.sketchItems.indexOf(this.specKeys[i])==-1){
+                                this.sketchItems.push(this.specKeys[i])
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        watch:{
+            specKeyIds:function (newValue) {
+                // if(!this.addOrUpdateFlag){
+                //     return
+                // }
+                console.log('23232323')
+                this.sketchItems = []
+                this.watchSpec(newValue)
+            }
         },
         created() {
             this.initData()

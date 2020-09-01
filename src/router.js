@@ -124,6 +124,12 @@ const routers = [
                         name: 'editSpu',
                         meta: {title: '更新SPU'},
                         component: EditSpu
+                    },
+                    {
+                        path: '/addSpu',
+                        name: 'addSpu',
+                        meta: {title: '添加SPU'},
+                        component: EditSpu
                     }
                 ]
             },

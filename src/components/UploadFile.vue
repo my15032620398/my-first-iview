@@ -15,6 +15,7 @@
         <Upload
                 ref="upload"
                 :show-upload-list="false"
+                :on-progress="handleProgress"
                 :on-success="handleSuccess"
                 :format="['jpg','jpeg','png']"
                 :max-size="2048"
@@ -48,7 +49,8 @@
                 visible: false,
                 item: {},
                 view_url: '',
-                limit:1
+                limit:1,
+                tempuploadList:[]
             }
         },
         methods: {
@@ -60,14 +62,27 @@
             handleRemove(file) {
                 this.uploadList.splice(this.uploadList.indexOf(file), 1);
             },
+            handleProgress(event, file, fileList){
+                console.log('handleProgresshandleProgresshandleProgresshandleProgress')
+                console.log(event)
+                console.log(file)
+                console.log(fileList)
+                this.item.status = 'ing'
+            },
             handleSuccess(res, file) {
+                console.log('----------handleSuccess------------')
+                console.log(res)
+                console.log(file)
                 this.item.status = 'finished'
                 this.item.name = file.name
                 this.item.url = res[0].url
                 this.item.id = res[0].id
                 this.item.showProgress = file.showProgress
                 this.item.percentage = file.percentage
+                console.log(this.uploadList)
                 this.uploadList.push(this.item)
+                this.item = {}
+                console.log(this.uploadList)
             },
             handleFormatError(file) {
                 this.$Notice.warning({
@@ -98,6 +113,11 @@
             console.log(2222222222)
             this.limit = this.num
           }
+        },
+        mounted () {
+            this.tempuploadList = this.$refs.upload.fileList;
+            console.log('------tempuploadList------')
+            console.log(this.tempuploadList)
         }
     }
 </script>

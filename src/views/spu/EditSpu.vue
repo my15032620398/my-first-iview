@@ -40,7 +40,7 @@
                 <UploadFile :uploadList="mainUploadList"></UploadFile>
             </FormItem>
             <FormItem label="主题图">
-                <UploadFile :uploadList="themeUploadList"></UploadFile>
+                <UploadFile :uploadList="themeUploadList" :defaultList="themeDefaultList"></UploadFile>
             </FormItem>
             <FormItem label="轮播图">
                 <UploadFile :uploadList="slideShowUploadList" :num="num"></UploadFile>
@@ -98,9 +98,13 @@
                 tags:[],
                 addOrUpdate:true,
                 mainUploadList:[],
+                mainDefaultList:[],
                 themeUploadList:[],
+                themeDefaultList:[],
                 slideShowUploadList:[],
+                slideShowDefaultList:[],
                 detailUploadList:[],
+                detailDefaultList:[],
                 mainItem:{},
                 themeItem:{},
                 num:5,
@@ -143,9 +147,7 @@
             getSpecKeys() {
                 http.fetchGet('/v1/spec-key/list').then((res)=>{
                     this.specKeys = res.data
-                    console.log(this.specKeys)
                 }).catch(err=>{
-                    console.log(err)
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
@@ -158,7 +160,6 @@
                         this.specKeyIds.push(res.data[i].id)
                     }
                 }).catch(err=>{
-                    console.log(err)
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
@@ -167,7 +168,6 @@
             },
             dealData(res) {
                 this.spuData = res.data
-                console.log(this.spuData)
                 this.category_id = this.spuData.category_id
                 this.initSketchSpecKey()
                 this.initMainImg()
@@ -184,7 +184,9 @@
                 const name = ImgUtil.spliceImgName(this.spuData.img);
                 this.mainItem.name = name
                 this.mainItem.status = 'finished'
-                this.mainItem.url = this.spuData.img
+                this.mainItem.response = []
+                this.mainItem.response[0]={}
+                this.mainItem.response[0].url = this.spuData.img
                 this.mainItem.showProgress = true
                 this.mainItem.percentage = 100
                 this.mainUploadList.push(this.mainItem)
@@ -196,7 +198,9 @@
                 const name = ImgUtil.spliceImgName(this.spuData.for_theme_img);
                 this.themeItem.name = name
                 this.themeItem.status = 'finished'
-                this.themeItem.url = this.spuData.for_theme_img
+                this.themeItem.response = []
+                this.themeItem.response[0]={}
+                this.themeItem.response[0].url = this.spuData.for_theme_img
                 this.themeItem.showProgress = true
                 this.themeItem.percentage = 100
                 this.themeUploadList.push(this.themeItem)
@@ -211,7 +215,9 @@
                     const name = ImgUtil.spliceImgName(ssImg);
                     ssItem.name = name
                     ssItem.status = 'finished'
-                    ssItem.url = ssImg
+                    ssItem.response = []
+                    ssItem.response[0]={}
+                    ssItem.response[0].url = ssImg
                     ssItem.showProgress = true
                     ssItem.percentage = 100
                     this.slideShowUploadList.push(ssItem)
@@ -227,7 +233,9 @@
                     const name = ImgUtil.spliceImgName(dImg);
                     dItem.name = name
                     dItem.status = 'finished'
-                    dItem.url = dImg
+                    dItem.response = []
+                    dItem.response[0]={}
+                    dItem.response[0].url = dImg
                     dItem.showProgress = true
                     dItem.percentage = 100
                     this.detailUploadList.push(dItem)
@@ -265,11 +273,7 @@
             },
             getSkuBySpuId(id) {
                 http.fetchGet('/v1/sku/by/spu/'+id).then((res)=>{
-                    console.log('----getSkuBySpuId-----')
-                    console.log(res)
                     this.skuList = res.data;
-                    console.log('----skuList----')
-                    console.log(this.skuList)
                     this.default_sku_id = this.spuData.default_sku_id
                     //this.defaultSku()
 
@@ -291,10 +295,10 @@
                 let spuImgList = []
                 let spuDetailImgList = []
                 for(let i=0;i<this.detailUploadList.length;i++){
-                    spuDetailImgList.push(this.detailUploadList[i].url)
+                    spuDetailImgList.push(this.detailUploadList[i].response[0].url)
                 }
                 for(let i=0;i<this.slideShowUploadList.length;i++){
-                    spuImgList.push(this.slideShowUploadList[i].url)
+                    spuImgList.push(this.slideShowUploadList[i].response[0].url)
                 }
                 for(let i=0;i<this.tags.length;i++){
                     if(i==this.tags.length){
@@ -306,8 +310,8 @@
                 let param={
                     title:data.title,
                     subtitle:data.subtitle,
-                    img:this.mainUploadList.length>0?this.mainUploadList[0].url:null,
-                    for_theme_img:this.themeUploadList.length>0?this.themeUploadList[0].url:null,
+                    img:this.mainUploadList.length>0?this.mainUploadList[0].response[0].url:null,
+                    for_theme_img:this.themeUploadList.length>0?this.themeUploadList[0].response[0].url:null,
                     category_id:this.category_id,
                     online:data.online,
                     sketch_spec_id:this.sketch_spec_id,
@@ -325,7 +329,6 @@
             },
             addSpu(data){
                 const params = this.dealParam(data)
-                console.log(params)
                 http.fetchPost('/v1/spu',params).then((res)=>{
                     this.$Message.success(res.data.message)
                 }).catch(err=>{
@@ -373,15 +376,12 @@
             },
             initCategory() {
                 http.fetchGet('/v1/category/sub/list').then((res)=>{
-                    console.log('------category---------')
-                    console.log(res.data)
                     if(res.data.length<=0){
                         return
                     }
                     for(let i=0;i<res.data.length;i++){
                         this.category_item.push(res.data[i])
                     }
-                    console.log(this.category_item)
                 }).catch(err=>{
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
@@ -403,7 +403,6 @@
                 // if(!this.addOrUpdateFlag){
                 //     return
                 // }
-                console.log('23232323')
                 this.sketchItems = []
                 this.watchSpec(newValue)
             }

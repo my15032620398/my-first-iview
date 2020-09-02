@@ -7,7 +7,7 @@ function findImgUrl(uploadList,name) {
     for (let i=0;i<uploadList.length;i++){
         const oName = uploadList[i].name;
         if(oName==name){
-            return uploadList[i].url
+            return uploadList[i].response[0].url
         }
     }
 }

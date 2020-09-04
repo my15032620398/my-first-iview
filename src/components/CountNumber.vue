@@ -49,6 +49,7 @@
                     this.up(e);
                 } else if (e.key === 'ArrowDown') {
                     this.down(e);
+
                 }
             },
             keyEnter(e){

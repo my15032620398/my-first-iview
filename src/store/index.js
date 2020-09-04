@@ -6,7 +6,8 @@ let store = {
         subCategoryDetail:Object,
         gridCategoryDetail:Object,
         spuDetail:Object,
-        specKeyDetail:Object
+        specKeyDetail:Object,
+        skuDetail:Object
     },
     setBannerId (newValue) {
         this.state.bannerId = newValue
@@ -28,6 +29,9 @@ let store = {
     },
     setSpecKeyDetail(newValue){
         this.state.specKeyDetail = newValue
+    },
+    setSkuDetail(newValue){
+        this.state.skuDetail = newValue
     }
 }
 export default store

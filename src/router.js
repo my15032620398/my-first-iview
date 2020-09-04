@@ -19,6 +19,9 @@ import SpecKeyList from "./views/spec-key/SpecKeyList";
 import AddSpecKey from "./views/spec-key/AddSpecKey";
 import EditSpecKey from "./views/spec-key/EditSpecKey";
 import AddOrUpdateSpecValue from "./views/spec-key/AddOrUpdateSpecValue";
+import EditOrAddSku from "./views/sku/EditOrAddSku";
+import HomeSku from "./views/sku/HomeSku";
+import SkuList from "./views/sku/SkuList";
 
 const routers = [
     {
@@ -169,6 +172,26 @@ const routers = [
                         meta: {title: '修改规格值'},
                         component: AddOrUpdateSpecValue
                     },
+                ]
+            },
+            {
+                path: '/homeSpu',
+                name: 'homeSpu',
+                meta: {title: 'SKU管理'},
+                component: HomeSku,
+                children:[
+                    {
+                        path: '/skuList',
+                        name: 'skuList',
+                        meta: {title: 'SKU列表'},
+                        component: SkuList,
+                    },
+                    {
+                        path: '/editSku',
+                        name: 'editSku',
+                        meta: {title: '更新Sku'},
+                        component: EditOrAddSku,
+                    }
                 ]
             }
         ]

@@ -100,7 +100,7 @@
                 this.$router.push({path: '/editSpu', query: {data: spuData.id}})
             },
             remove(id, index) {
-                http.fetchDelete('/v1/category/' + id, null).then((res => {
+                http.fetchDelete('/v1/spu/' + id, null).then((res => {
                     this.data6.splice(index, 1);
                     this.$Message.success(res.data.message)
                 })).catch(err => {

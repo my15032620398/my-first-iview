@@ -63,6 +63,16 @@
                 SPU列表
               </menu-item>
             </Submenu>
+            <Submenu name="6">
+              <template slot="title">
+                <Icon type="ios-paper"/>
+                SKU管理
+              </template>
+              <menu-item name="SKU列表">
+                <Icon type="ios-link"/>
+                SKU列表
+              </menu-item>
+            </Submenu>
           </Menu>
         </Sider>
       </scroll>
@@ -190,6 +200,9 @@
                         break
                     case 'SPU列表':
                         this.$router.push('/spuList')
+                        break
+                    case 'SKU列表':
+                        this.$router.push('/skuList')
                         break
                     default:
                         this.$router.push('/')

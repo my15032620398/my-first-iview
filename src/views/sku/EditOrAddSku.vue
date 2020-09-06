@@ -1,70 +1,85 @@
 <template>
-  <div class="gc-1">
-    <div class="h-1">
-      <div class="h-1-1">
-        {{addOrUpdate?'新建SKU':'更新SKU'}}
-      </div>
-      <Button type="primary" icon="ios-undo" @click="back">返回</Button>
+    <div class="gc-1">
+        <div class="h-1">
+            <div class="h-1-1">
+                {{addOrUpdate?'新建SKU':'更新SKU'}}
+            </div>
+            <Button type="primary" icon="ios-undo" @click="back">返回</Button>
+        </div>
+        <Form :model="skuData" label-position="left" :label-width="100">
+            <FormItem label="标题">
+                <Input v-model="skuData.title" placeholder="请输入标题" class="form"/>
+            </FormItem>
+            <FormItem label="价格">
+                <InputNumber
+                        class="in-1"
+                        :max="10000"
+                        v-model="skuData.price"
+                        :formatter="value => `${parseFloat(value).toFixed(2)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"
+                        :parser="value => value.replace(/\$\s?|(,*)/g, '')"
+                        :step="0.1">
+                </InputNumber>
+                <!--        <CountNumber v-model="skuData.price"></CountNumber>-->
+            </FormItem>
+            <FormItem label="折扣价">
+                <div class="dp-0">
+                    <RadioGroup v-model="discountValue" @on-change="onChangeRadio">
+                        <Radio label="无折扣"></Radio>
+                        <Radio label="折扣价"></Radio>
+                        <Radio label="打折"></Radio>
+                    </RadioGroup>
+                    <Input :disabled="disabled1" v-model="inputDiscountPrice" class="form" style="margin-bottom: 5px"/>
+                    <Input :disabled="disabled2" v-model="newDiscountPrice" placeholder="请输入折扣价" class="form"/>
+                </div>
+            </FormItem>
+            <FormItem label="编码">
+                <Input v-model="skuData.code" placeholder="请输入编码" class="form"/>
+            </FormItem>
+            <FormItem label="库存">
+                <Input v-model="skuData.stock" placeholder="请输入库存" class="form"/>
+            </FormItem>
+            <FormItem label="SPU">
+                <Input v-model="skuData.spu_id" placeholder="请输入SPU" class="form"/>
+            </FormItem>
+            <FormItem label="是否上架">
+                下架
+                <i-switch v-model="skuData.online" :true-value=1 :false-value=0 />
+                上架
+            </FormItem>
+            <FormItem label="图片">
+                <UploadFile :uploadList="mainUploadList"></UploadFile>
+            </FormItem>
+            <div class="gridCategoryBut">
+                <Button type="primary" class="saveGridCategoryBut"
+                        @click="addOrUpdate?addSku(skuData):updateSku(skuData)">保存
+                </Button>
+                <Button html-type="reset">重置</Button>
+            </div>
+        </Form>
     </div>
-    <Form :model="skuData" label-position="left" :label-width="100">
-      <FormItem label="标题">
-        <Input v-model="skuData.title" placeholder="请输入标题" class="form"/>
-      </FormItem>
-      <FormItem label="价格">
-<!--        <InputNumber-->
-<!--                :max="10000"-->
-<!--                v-model="skuData.price"-->
-<!--                :formatter="value => `${parseFloat(value).toFixed(2)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')"-->
-<!--                :parser="value => value.replace(/\$\s?|(,*)/g, '')"-->
-<!--        :step="0.1" >-->
-<!--        </InputNumber>-->
-        <CountNumber v-model="skuData.price"></CountNumber>
-      </FormItem>
-      <FormItem label="折扣价">
-        <Input v-model="skuData.discount_price" placeholder="请输入折扣价" class="form"/>
-      </FormItem>
-      <FormItem label="编码">
-        <Input v-model="skuData.code" placeholder="请输入编码" class="form"/>
-      </FormItem>
-      <FormItem label="库存">
-        <Input v-model="skuData.stock" placeholder="请输入库存" class="form"/>
-      </FormItem>
-      <FormItem label="SPU">
-        <Input v-model="skuData.spu_id" placeholder="请输入SPU" class="form"/>
-      </FormItem>
-      <FormItem label="是否上架">
-        下架
-        <i-switch v-model="skuData.online" :true-value=1 :false-value=0 />
-        上架
-      </FormItem>
-      <FormItem label="图片">
-        <UploadFile :uploadList="mainUploadList"></UploadFile>
-      </FormItem>
-      <div class="gridCategoryBut">
-        <Button type="primary" class="saveGridCategoryBut" @click="addOrUpdate?addSku(skuData):updateSku(skuData)">保存
-        </Button>
-        <Button html-type="reset">重置</Button>
-      </div>
-    </Form>
-  </div>
 </template>
 
 <script>
     import UploadFile from "../../components/UploadFile";
     import ImgUtil from "../../utils/ImgUtil";
-    import CountNumber from "../../components/CountNumber";
+    // import CountNumber from "../../components/CountNumber";
     export default {
         name: "EditOrAddSku",
         components: {
             UploadFile,
-            CountNumber
+            // CountNumber
         },
         data() {
             return {
                 addOrUpdate: false,
                 skuData: {},
                 mainUploadList: [],
-                mainItem: {}
+                mainItem: {},
+                discountValue:'无折扣',
+                disabled1:true,
+                disabled2:true,
+                inputDiscountPrice:null,
+                newDiscountPrice:null
             }
         },
         methods: {
@@ -83,7 +98,7 @@
                     return
                 }
                 this.skuData = this.$route.query.data
-
+                this.newDiscountPrice = this.skuData.discount_price
                 this.initImg();
                 console.log(this.skuData)
             },
@@ -101,6 +116,28 @@
                 this.mainItem.percentage = 100
                 this.mainUploadList.push(this.mainItem)
                 console.log(this.mainUploadList)
+            },
+            onChangeRadio(){
+                console.log(this.discountValue)
+                if(!(this.discountValue === '无折扣')){
+                    this.disabled1 = false
+                }else{
+                    this.disabled1 = true
+                }
+
+            }
+        },
+        watch:{
+            inputDiscountPrice:function(newValue){
+                if(!Number(newValue)){
+                    this.$Message.warning('请输入数字')
+                    return
+                }
+                if(this.discountValue == '折扣价'){
+                    this.newDiscountPrice = newValue
+                }else if(this.discountValue == '打折'){
+                    this.newDiscountPrice = this.skuData.price * newValue
+                }
             }
         },
         created() {
@@ -110,41 +147,47 @@
 </script>
 
 <style scoped>
-  .gc-1 {
-    margin-right: 20px;
-    margin-left: 20px;
-  }
+    .gc-1 {
+        margin-right: 20px;
+        margin-left: 20px;
+    }
 
-  .h-1 {
+    .h-1 {
 
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    justify-items: center;
-    padding-bottom: 20px;
-  }
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        justify-items: center;
+        padding-bottom: 20px;
+    }
 
-  .h-1-1 {
-    color: #6739ff;
-  }
+    .h-1-1 {
+        color: #6739ff;
+    }
 
-  .ep-1 {
-    height: 22px;
-    width: 100px;
-    border-radius: 4px;
-  }
+    .ep-1 {
+        height: 22px;
+        width: 100px;
+        border-radius: 4px;
+    }
 
-  .gridCategoryBut {
-    padding-left: 100px;
-  }
+    .gridCategoryBut {
+        padding-left: 100px;
+    }
 
-  .saveGridCategoryBut {
-    margin-right: 20px;
-  }
+    .saveGridCategoryBut {
+        margin-right: 20px;
+    }
 
-  .form {
-    width: 550px;
-  }
-
+    .form {
+        width: 550px;
+    }
+    .in-1{
+        width: 100px;
+    }
+    .dp-0{
+        display: flex;
+        flex-direction: column;
+    }
 </style>

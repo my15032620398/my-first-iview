@@ -21,7 +21,7 @@
         name: "CountNumber",
         props: {
             value: {
-                default: 10,
+                default: 0,
                 type: Number
             },
             precision: {

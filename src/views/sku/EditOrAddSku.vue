@@ -132,7 +132,6 @@
                 if(!Number(newValue)){
                     this.$Message.warning('请输入数字')
                     return
-
                 }
                 if(this.discountValue == '折扣价'){
                     this.newDiscountPrice = newValue

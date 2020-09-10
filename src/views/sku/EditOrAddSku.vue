@@ -29,17 +29,22 @@
                         <Radio label="打折"></Radio>
                     </RadioGroup>
                     <Input :disabled="disabled1" v-model="inputDiscountPrice" class="form" style="margin-bottom: 5px"/>
-                    <Input :disabled="disabled2" v-model="newDiscountPrice" placeholder="请输入折扣价" class="form"/>
+                    <Input :disabled="disabled2" v-model="newDiscountPrice" placeholder="折扣价" class="form"/>
                 </div>
             </FormItem>
             <FormItem label="编码">
-                <Input v-model="skuData.code" placeholder="请输入编码" class="form"/>
+                <Input disabled v-model="skuData.code" placeholder="请输入编码" class="form"/>
             </FormItem>
             <FormItem label="库存">
-                <Input v-model="skuData.stock" placeholder="请输入库存" class="form"/>
+              <InputNumber
+                      :min="0"
+                      :max="10000"
+                      v-model="skuData.stock"
+                      :step="1">
+              </InputNumber>
             </FormItem>
             <FormItem label="SPU">
-                <Input v-model="skuData.spu_id" placeholder="请输入SPU" class="form"/>
+                <Input v-model="spuDetail.spu_id" placeholder="请输入SPU" class="form"/>
             </FormItem>
             <FormItem label="是否上架">
                 下架
@@ -48,6 +53,12 @@
             </FormItem>
             <FormItem label="图片">
                 <UploadFile :uploadList="mainUploadList"></UploadFile>
+            </FormItem>
+            <FormItem v-for="item in specData" :key="item.id" :label="item.name">
+              <i-select v-model="item.selected_value" clearable style="width:200px" placeholder="请选择规格(可多选)">
+                <i-option v-for="a in item.items" :value="a.id" :key="a.id">{{ a.id+'-'+a.value }}
+                </i-option>
+              </i-select>
             </FormItem>
             <div class="gridCategoryBut">
                 <Button type="primary" class="saveGridCategoryBut"
@@ -62,6 +73,8 @@
 <script>
     import UploadFile from "../../components/UploadFile";
     import ImgUtil from "../../utils/ImgUtil";
+    import http from "../../request/http";
+    // import * as qs from "qs";
     // import CountNumber from "../../components/CountNumber";
     export default {
         name: "EditOrAddSku",
@@ -79,7 +92,9 @@
                 disabled1:true,
                 disabled2:true,
                 inputDiscountPrice:null,
-                newDiscountPrice:null
+                newDiscountPrice:null,
+                spuDetail:{},
+                specData:[]
             }
         },
         methods: {
@@ -90,7 +105,28 @@
                 console.log(data)
             },
             updateSku(data) {
-                console.log(data)
+                console.log('---update-----')
+
+                let selectors = []
+                this.specData.forEach(spec=>{
+                    let a = {
+                        keyId:spec.id,
+                        valueId:spec.selected_value
+                    }
+                    selectors.push(a)
+                })
+                const param={
+                    title:data.title,
+                    img:this.mainUploadList[0].response[0].url,
+                    discountPrice:this.newDiscountPrice,
+                    online:data.online,
+                    spuId:data.spu_id,
+                    price:data.price,
+                    stock:data.stock,
+                    selectors:selectors
+
+                }
+                console.log(param)
             },
             initData() {
                 if (!this.skuData) {
@@ -98,8 +134,10 @@
                     return
                 }
                 this.skuData = this.$route.query.data
+                this.getSpuById(this.skuData.spu_id);
                 this.newDiscountPrice = this.skuData.discount_price
                 this.initImg();
+                this.initSpecData();
                 console.log(this.skuData)
             },
             initImg() {
@@ -125,6 +163,42 @@
                     this.disabled1 = true
                 }
 
+            },
+            getSpuById(spu_id) {
+                http.fetchGet("/v1/spu/"+spu_id,null).then((res)=>{
+                    this.spuDetail = res.data
+                    console.log(this.spuDetail)
+                }).catch(err=>{
+                    console.log(err)
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
+            },
+            initSpecData() {
+                // const param = qs.stringify({ specKeys: [1,3] }, { arrayFormat: 'comma' })
+                // console.log(param)
+                // const param = {
+                //     specKeyValueDO:this.skuData.specs
+                // }
+                // http.fetchPost('/v1/spec-value/by/speckeys',this.skuData.specs).then((res)=>{
+                //     this.specData = res.data;
+                //     console.log(this.specData)
+                // }).catch(err=>{
+                //     this.$Message.error(JSON.stringify(err.response.data.message))
+                // })
+
+                http.fetchGet('/v1/spec-key/'+this.skuData.spu_id+'/detail',null).then((res)=>{
+                    this.specData = res.data;
+                    for(let i=0;i<this.specData.length;i++){
+                        for(let j=0;j<this.skuData.specs.length;j++){
+                            if(this.skuData.specs[j].key_id == this.specData[i].id){
+                                this.specData[i].selected_value = this.skuData.specs[j].value_id
+                            }
+                        }
+                    }
+                    console.log(this.specData)
+                }).catch(err=>{
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
             }
         },
         watch:{

@@ -44,7 +44,10 @@
               </InputNumber>
             </FormItem>
             <FormItem label="SPU">
-                <Input v-model="spuDetail.spu_id" placeholder="请输入SPU" class="form"/>
+                <i-select v-model="skuData.spu_id" clearable style="width:200px" placeholder="请输入SPU">
+                    <i-option v-for="item in spuList" :value="item.id" :key="item.id">{{ item.id+'-'+item.title }}
+                    </i-option>
+                </i-select>
             </FormItem>
             <FormItem label="是否上架">
                 下架
@@ -94,7 +97,8 @@
                 inputDiscountPrice:null,
                 newDiscountPrice:null,
                 spuDetail:{},
-                specData:[]
+                specData:[],
+                spuList:[],
             }
         },
         methods: {
@@ -124,8 +128,8 @@
                     price:data.price,
                     stock:data.stock,
                     selectors:selectors
-
                 }
+                http.
                 console.log(param)
             },
             initData() {
@@ -138,6 +142,7 @@
                 this.newDiscountPrice = this.skuData.discount_price
                 this.initImg();
                 this.initSpecData();
+                this.initSpuData();
                 console.log(this.skuData)
             },
             initImg() {
@@ -196,6 +201,13 @@
                         }
                     }
                     console.log(this.specData)
+                }).catch(err=>{
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
+            },
+            initSpuData() {
+                http.fetchGet('/v1/spu/list',null).then((res)=>{
+                    this.spuList = res.data
                 }).catch(err=>{
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })

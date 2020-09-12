@@ -114,8 +114,8 @@
                 let selectors = []
                 this.specData.forEach(spec=>{
                     let a = {
-                        keyId:spec.id,
-                        valueId:spec.selected_value
+                        key_id:spec.id,
+                        value_id:spec.selected_value
                     }
                     selectors.push(a)
                 })
@@ -124,12 +124,16 @@
                     img:this.mainUploadList[0].response[0].url,
                     discountPrice:this.newDiscountPrice,
                     online:data.online,
-                    spuId:data.spu_id,
+                    spu_id:data.spu_id,
                     price:data.price,
                     stock:data.stock,
                     selectors:selectors
                 }
-                http.
+                http.fetchPut('/v1/sku/'+this.skuData.id,param).then((res)=>{
+                    this.$Message.success(res.data.message)
+                }).catch(err=>{
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
                 console.log(param)
             },
             initData() {

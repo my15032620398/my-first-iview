@@ -103,6 +103,7 @@
         },
         methods: {
             back() {
+
                 this.$router.push('/skuList')
             },
             addSku(data) {

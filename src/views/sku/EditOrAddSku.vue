@@ -6,7 +6,7 @@
             </div>
             <Button type="primary" icon="ios-undo" @click="back">返回</Button>
         </div>
-        <Form :model="skuData" label-position="left" :label-width="100">
+        <Form :model="skuData" label-position="left" :label-width="100" :loading="loading">
             <FormItem label="标题">
                 <Input v-model="skuData.title" placeholder="请输入标题" class="form"/>
             </FormItem>
@@ -32,7 +32,7 @@
                     <Input :disabled="disabled2" v-model="newDiscountPrice" placeholder="折扣价" class="form"/>
                 </div>
             </FormItem>
-            <FormItem label="编码">
+            <FormItem v-show="!addOrUpdate" label="编码">
                 <Input disabled v-model="skuData.code" placeholder="请输入编码" class="form"/>
             </FormItem>
             <FormItem label="库存">
@@ -44,7 +44,7 @@
               </InputNumber>
             </FormItem>
             <FormItem label="SPU">
-                <i-select v-model="skuData.spu_id" clearable style="width:200px" placeholder="请输入SPU">
+                <i-select v-model="listen_spu_id" clearable style="width:200px" placeholder="请输入SPU">
                     <i-option v-for="item in spuList" :value="item.id" :key="item.id">{{ item.id+'-'+item.title }}
                     </i-option>
                 </i-select>
@@ -99,6 +99,8 @@
                 spuDetail:{},
                 specData:[],
                 spuList:[],
+                loading:true,
+                listen_spu_id:null
             }
         },
         methods: {
@@ -106,11 +108,11 @@
                 this.$router.push('/skuList')
             },
             addSku(data) {
-                console.log(data)
-            },
-            updateSku(data) {
-                console.log('---update-----')
-
+                console.log('---add-----')
+                let img =''
+                if(this.mainUploadList.length != 0){
+                    img = this.mainUploadList[0].response[0].url
+                }
                 let selectors = []
                 this.specData.forEach(spec=>{
                     let a = {
@@ -119,9 +121,40 @@
                     }
                     selectors.push(a)
                 })
+                const param = {
+                    title:data.title,
+                    img:img,
+                    discount_price:this.newDiscountPrice,
+                    online:data.online,
+                    spu_id:data.spu_id,
+                    price:data.price,
+                    stock:data.stock,
+                    selectors:selectors
+                }
+                http.fetchPost('/v1/sku',param).then((res)=>{
+                    this.$Message.success(res.data.message)
+                }).catch(err=>{
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
+                console.log(param)
+            },
+            updateSku(data) {
+                console.log('---update-----')
+                let img = '';
+                let selectors = []
+                this.specData.forEach(spec=>{
+                    let a = {
+                        key_id:spec.id,
+                        value_id:spec.selected_value
+                    }
+                    selectors.push(a)
+                })
+                if(this.mainUploadList.length != 0){
+                    img = this.mainUploadList[0].response[0].url
+                }
                 const param={
                     title:data.title,
-                    img:this.mainUploadList[0].response[0].url,
+                    img:img,
                     discountPrice:this.newDiscountPrice,
                     online:data.online,
                     spu_id:data.spu_id,
@@ -137,16 +170,18 @@
                 console.log(param)
             },
             initData() {
-                if (!this.skuData) {
+                if (!this.$route.query.data) {
                     this.addOrUpdate = true
+                    this.initSpuData();
                     return
                 }
                 this.skuData = this.$route.query.data
                 this.getSpuById(this.skuData.spu_id);
                 this.newDiscountPrice = this.skuData.discount_price
                 this.initImg();
-                this.initSpecData();
+                this.initSpecData(this.skuData.spu_id);
                 this.initSpuData();
+                this.loading = false
                 console.log(this.skuData)
             },
             initImg() {
@@ -182,21 +217,12 @@
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
-            initSpecData() {
-                // const param = qs.stringify({ specKeys: [1,3] }, { arrayFormat: 'comma' })
-                // console.log(param)
-                // const param = {
-                //     specKeyValueDO:this.skuData.specs
-                // }
-                // http.fetchPost('/v1/spec-value/by/speckeys',this.skuData.specs).then((res)=>{
-                //     this.specData = res.data;
-                //     console.log(this.specData)
-                // }).catch(err=>{
-                //     this.$Message.error(JSON.stringify(err.response.data.message))
-                // })
-
-                http.fetchGet('/v1/spec-key/'+this.skuData.spu_id+'/detail',null).then((res)=>{
+            initSpecData(spu_id) {
+                http.fetchGet('/v1/spec-key/'+spu_id+'/detail',null).then((res)=>{
                     this.specData = res.data;
+                    if(this.addOrUpdate){
+                        return
+                    }
                     for(let i=0;i<this.specData.length;i++){
                         for(let j=0;j<this.skuData.specs.length;j++){
                             if(this.skuData.specs[j].key_id == this.specData[i].id){
@@ -206,6 +232,7 @@
                     }
                     console.log(this.specData)
                 }).catch(err=>{
+                    console.log(err)
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
@@ -228,6 +255,10 @@
                 }else if(this.discountValue == '打折'){
                     this.newDiscountPrice = this.skuData.price * newValue
                 }
+            },
+            listen_spu_id:function (newValue) {
+                this.skuData.spu_id = newValue
+                this.initSpecData(newValue)
             }
         },
         created() {

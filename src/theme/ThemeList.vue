@@ -1,17 +1,24 @@
 <template>
   <div class="sp-0">
     <div class="t-1">
-      <div class="t-1-1">SKU列表</div>
-      <Button type="primary" @click="addSPU">添加SKU</Button>
+      <div class="t-1-1">主题列表</div>
+      <Button type="primary" @click="addTheme">添加主题</Button>
     </div>
     <Table border :columns="columns12" :data="data6" :loading="loading" class="t-0"  >
-      <template slot-scope="{row}" slot="img">
+      <template slot-scope="{row}" slot="title_img">
         <div class="i-1">
-          <img :src="row.img" class="bannerImg">
+          <img :src="row.title_img" class="img">
         </div>
       </template>
-      <template slot-scope="{ row }" slot="online">
-        <strong>{{ row.online=='1'?'是':'否' }}</strong>
+      <template slot-scope="{row}" slot="entrance_img">
+        <div class="i-1">
+          <img :src="row.entrance_img" class="img">
+        </div>
+      </template>
+      <template slot-scope="{row}" slot="internal_top_img">
+        <div class="i-1">
+          <img :src="row.internal_top_img" class="img">
+        </div>
       </template>
       <template slot-scope="{ row, index }" slot="action">
         <Button type="primary" size="small" style="margin-right: 5px" @click="edit(row)">编辑</Button>
@@ -27,10 +34,10 @@
 </template>
 
 <script>
-  import http from "../../request/http";
-  import store from "../../store";
+    import http from "../request/http";
+
     export default {
-        name: "SkuList",
+        name: "ThemeList",
         data(){
             return{
                 columns12: [
@@ -41,10 +48,9 @@
                         width: 100
                     },
                     {
-                        title: '图片',
-                        slot: 'img',
+                        title: '标题图',
+                        slot: 'title_img',
                         align: "center",
-                        width: 150
                     },
                     {
                         title: '标题',
@@ -52,34 +58,29 @@
                         align: "center",
                     },
                     {
-                        title: 'spu_id',
-                        key: 'spu_id',
+                        title: '名称',
+                        key: 'name',
                         align: "center",
-                        width: 100
                     },
                     {
-                        title: '折扣',
-                        key: 'discount_price',
+                        title: '模板名',
+                        key: 'tpl_name',
                         align: "center",
-                        width: 100
                     },
                     {
-                        title: '价格(元)',
-                        key: 'price',
+                        title: '描述',
+                        key: 'description',
                         align: "center",
-                        width: 100
                     },
                     {
-                        title: '是否上架',
-                        slot: 'online',
+                        title: '入口图',
+                        slot: 'entrance_img',
                         align: "center",
-                        width: 100
                     },
                     {
-                        title: '编码',
-                        key: 'code',
+                        title: '外连接图',
+                        slot: 'internal_top_img',
                         align: "center",
-                        width: 150
                     },
                     {
                         title: '操作',
@@ -97,24 +98,12 @@
             }
         },
         methods:{
-            edit(skuData) {
-                store.setSkuDetail(skuData)
-                this.$router.push({path: '/editSku', query: {data: skuData}})
-            },
-            remove(id,index) {
-                http.fetchDelete('/v1/sku/' + id, null).then((res => {
-                    this.data6.splice(index, 1);
-                    this.$Message.success(res.data.message)
-                })).catch(err => {
-                    this.$Message.error(JSON.stringify(err.response.data.message))
-                })
-            },
-            initData() {
+            initData(){
                 const param = {
                     page: this.page,
                     count: this.count,
                 }
-                http.fetchGet("/v1/sku/page", param).then((res) => {
+                http.fetchGet("/v1/theme/page", param).then((res) => {
                     this.total = res.data.total;
                     this.data6 = res.data.items
                 }).catch(err => {
@@ -122,16 +111,21 @@
                 })
                 this.loading = false
             },
-            onPageChange(page) {
-                this.page = page;
-                this.initData();
+            addTheme(){
+
             },
-            addSPU() {
-                this.$router.push('/addSku')
+            edit(themeData){
+                this.$router.push({path: '/updateTheme', query: {data: themeData}})
             },
+            remove(){
+
+            },
+            onPageChange(){
+
+            }
         },
         created() {
-            this.initData();
+          this.initData()
         }
     }
 </script>
@@ -152,7 +146,7 @@
     margin-right: 4px;
   }
 
-  .bannerImg {
+  .img {
     width: 100%;
     height: 100%;
   }

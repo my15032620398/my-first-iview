@@ -73,6 +73,16 @@
                 SKU列表
               </menu-item>
             </Submenu>
+            <Submenu name="7">
+              <template slot="title">
+                <Icon type="ios-paper"/>
+                主题管理
+              </template>
+              <menu-item name="主题列表">
+                <Icon type="ios-link"/>
+                主题列表
+              </menu-item>
+            </Submenu>
           </Menu>
         </Sider>
       </scroll>
@@ -92,13 +102,11 @@
           </div>
         </Header>
         <content class="c-1">
-          <template>
-            <Tabs type="card" @on-click="onChangeTabs" :value="tabName"
-                  @on-tab-remove="handleTabRemove">
-              <TabPane v-for="tab in tabs" :key="tab" :label='tab' type="card" closable :name="tab">
-              </TabPane>
-            </Tabs>
-          </template>
+          <Tabs type="card" @on-click="onChangeTabs" :value="tabName"
+                @on-tab-remove="handleTabRemove">
+            <TabPane v-for="tab in tabs" :key="tab" :label='tab' type="card" closable :name="tab">
+            </TabPane>
+          </Tabs>
           <Scroll :height="contentScollerHeight">
             <router-view></router-view>
           </Scroll>
@@ -126,7 +134,7 @@
                 hHeight: window.outerHeight,
                 tabs: [],
                 tabName: '',
-                mainRouter: ['六宫格列表', '添加规格名', '规格名列表', 'SPU列表']
+                mainRouter: ['六宫格列表', '添加规格名', '规格名列表', 'SPU列表','SKU列表','主题列表']
             }
         },
         computed: {
@@ -204,9 +212,11 @@
                     case 'SKU列表':
                         this.$router.push('/skuList')
                         break
+                    case '主题列表':
+                        this.$router.push('/themeList')
+                        break
                     default:
                         this.$router.push('/')
-
                 }
             },
             isHome(route) {

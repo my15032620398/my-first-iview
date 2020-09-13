@@ -22,6 +22,9 @@ import AddOrUpdateSpecValue from "./views/spec-key/AddOrUpdateSpecValue";
 import EditOrAddSku from "./views/sku/EditOrAddSku";
 import HomeSku from "./views/sku/HomeSku";
 import SkuList from "./views/sku/SkuList";
+import HomeTheme from "./theme/HomeTheme";
+import ThemeList from "./theme/ThemeList";
+import AddOrUpdateTheme from "./theme/AddOrUpdateTheme";
 
 const routers = [
     {
@@ -175,8 +178,8 @@ const routers = [
                 ]
             },
             {
-                path: '/homeSpu',
-                name: 'homeSpu',
+                path: '/homeSku',
+                name: 'homeSku',
                 meta: {title: 'SKU管理'},
                 component: HomeSku,
                 children:[
@@ -191,7 +194,40 @@ const routers = [
                         name: 'editSku',
                         meta: {title: '更新Sku'},
                         component: EditOrAddSku,
+                    },
+                    {
+                        path: '/addSku',
+                        name: 'addSku',
+                        meta: {title: '添加Sku'},
+                        component: EditOrAddSku,
                     }
+                ]
+            },
+            {
+                path: '/homeTheme',
+                name: 'homeTheme',
+                meta: {title: '主题管理'},
+                component: HomeTheme,
+                children:[
+                    {
+                        path: '/themeList',
+                        name: 'themeList',
+                        meta: {title: '主题列表'},
+                        component: ThemeList,
+                    },
+                    {
+                        path: '/addTheme',
+                        name: 'addTheme',
+                        meta: {title: '添加主题'},
+                        component: AddOrUpdateTheme,
+                    },
+                    {
+                        path: '/updateTheme',
+                        name: 'updateTheme',
+                        meta: {title: '主题更新'},
+                        component: AddOrUpdateTheme,
+                    },
+
                 ]
             }
         ]

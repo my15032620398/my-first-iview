@@ -17,7 +17,7 @@
         <Input v-model="themeData.description" placeholder="请输入描述" class="form"/>
       </FormItem>
       <FormItem label="模板名">
-        <i-select v-model="themeData.tpl_name" clearable style="width:200px" placeholder="请输入SPU">
+        <i-select v-model="themeData.tpl_name" clearable style="width:200px" placeholder="请输入模板名">
           <i-option v-for="item in tplNames" :value="item" :key="item">{{item}}
           </i-option>
         </i-select>
@@ -43,28 +43,30 @@
         <Button html-type="reset">重置</Button>
       </div>
     </Form>
-    <div class="th-0">
-      主题下SPU
+    <div v-show="!addOrUpdate">
+      <div class="th-0">
+        主题下SPU
+      </div>
+      <div>
+        <Table border :columns="columns12" :data="data6" :loading="loading" class="t-0">
+          <template slot-scope="{row}" slot="img">
+            <div class="i-1">
+              <img :src="row.img" class="img">
+            </div>
+          </template>
+          <template slot-scope="{ row, index }" slot="action">
+            <Button type="error" size="small" @click="remove_spu(row.id,index)">删除</Button>
+          </template>
+        </Table>
+      </div>
+      <div class="th-1">
+        <i-select v-model="themeSpu" clearable style="width:200px" placeholder="请选择SPU">
+          <i-option v-for="(item,index) in themeSpus" :value="item.id" :key="index">{{item.id+'-'+item.title}}
+          </i-option>
+        </i-select>
+        <Button type="primary" @click="addSpu" class="thb-1">添加</Button>
+      </div>
     </div>
-    <div>
-      <Table border :columns="columns12" :data="data6" :loading="loading" class="t-0">
-        <template slot-scope="{row}" slot="img">
-          <div class="i-1">
-            <img :src="row.img" class="img">
-          </div>
-        </template>
-        <template slot-scope="{ row, index }" slot="action">
-          <Button type="error" size="small" @click="remove_spu(row.id,index)">删除</Button>
-        </template>
-      </Table>
-    </div>
-        <div class="th-1">
-          <i-select v-model="themeSpu" clearable style="width:200px" placeholder="请选择SPU">
-            <i-option v-for="(item,index) in themeSpus" :value="item.id" :key="index">{{item.id+'-'+item.title}}
-            </i-option>
-          </i-select>
-          <Button type="primary"  @click="addSpu" class="thb-1">添加</Button>
-        </div>
   </div>
 </template>
 
@@ -129,6 +131,7 @@
             initData() {
                 if (!this.$route.query.data) {
                     this.addOrUpdate = true
+                    return
                 }
                 this.themeData = this.$route.query.data
                 this.initThemeSpu();
@@ -201,6 +204,33 @@
             },
             addTheme(themeData) {
                 console.log(themeData)
+                let title_img = ''
+                let entrance_img = ''
+                let internal_img = ''
+                if (this.title_img.length != 0) {
+                    title_img = this.title_img[0].response[0].url
+                }
+                if (this.entrance_img.length != 0) {
+                    entrance_img = this.entrance_img[0].response[0].url
+                }
+                if (this.internal_top_img.length != 0) {
+                    internal_img = this.internal_top_img[0].response[0].url
+                }
+                const param = {
+                    title: themeData.title,
+                    description: themeData.description,
+                    name: themeData.name,
+                    tpl_name: themeData.tplName,
+                    entrance_img: entrance_img,
+                    internal_top_img: internal_img,
+                    title_img: title_img,
+                }
+                console.log(param)
+                http.fetchPost('/v1/theme', param).then((res) => {
+                    this.$Message.success(res.data.message)
+                }).catch(err => {
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
             },
             updateTheme(themeData) {
                 console.log(themeData)
@@ -240,8 +270,8 @@
                     console.log('=====a====a======')
                     console.log(a)
                     const item = {
-                        id:a[0].id,
-                        title:a[0].title
+                        id: a[0].id,
+                        title: a[0].title
                     }
                     console.log('------item-------')
                     console.log(item)
@@ -250,25 +280,25 @@
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             },
-            addSpu(){
+            addSpu() {
                 const param = {
-                    theme_id:this.themeData.id,
-                    spu_id:this.themeSpu
+                    theme_id: this.themeData.id,
+                    spu_id: this.themeSpu
                 }
-                http.fetchPost('/v1/theme/spu',param).then((res)=>{
+                http.fetchPost('/v1/theme/spu', param).then((res) => {
                     this.$Message.success(res.data.message)
-                    let data = this.themeSpus.filter(ts=>ts.id == this.themeSpu)
+                    let data = this.themeSpus.filter(ts => ts.id == this.themeSpu)
                     const item = {
-                        id:this.themeSpu,
-                        img:data[0].img,
-                        title:data[0].title,
-                        subtitle:data[0].subtitle
+                        id: this.themeSpu,
+                        img: data[0].img,
+                        title: data[0].title,
+                        subtitle: data[0].subtitle
                     }
                     console.log(item)
                     this.data6.push(item)
-                    this.themeSpus.splice(data,1)
+                    this.themeSpus.splice(data, 1)
                     this.themeSpu = null
-                }).catch(err=>{
+                }).catch(err => {
                     this.$Message.error(JSON.stringify(err.response.data.message))
                 })
             }
@@ -360,11 +390,13 @@
     box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
     margin-right: 4px;
   }
-  .th-1{
+
+  .th-1 {
     margin-top: 20px;
 
   }
-  .thb-1{
+
+  .thb-1 {
     margin-left: 20px;
   }
 </style>

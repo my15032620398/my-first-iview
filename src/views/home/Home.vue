@@ -83,6 +83,16 @@
                 主题列表
               </menu-item>
             </Submenu>
+            <Submenu name="8">
+              <template slot="title">
+                <Icon type="ios-paper"/>
+                活动管理
+              </template>
+              <menu-item name="活动列表">
+                <Icon type="ios-link"/>
+                活动列表
+              </menu-item>
+            </Submenu>
           </Menu>
         </Sider>
       </scroll>
@@ -134,7 +144,7 @@
                 hHeight: window.outerHeight,
                 tabs: [],
                 tabName: '',
-                mainRouter: ['六宫格列表', '添加规格名', '规格名列表', 'SPU列表','SKU列表','主题列表']
+                mainRouter: ['六宫格列表', '添加规格名', '规格名列表', 'SPU列表','SKU列表','主题列表','活动列表']
             }
         },
         computed: {
@@ -214,6 +224,9 @@
                         break
                     case '主题列表':
                         this.$router.push('/themeList')
+                        break
+                    case '活动列表':
+                        this.$router.push('/activityList')
                         break
                     default:
                         this.$router.push('/')

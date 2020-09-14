@@ -25,6 +25,9 @@ import SkuList from "./views/sku/SkuList";
 import HomeTheme from "./theme/HomeTheme";
 import ThemeList from "./theme/ThemeList";
 import AddOrUpdateTheme from "./theme/AddOrUpdateTheme";
+import HomeActivity from "./views/activity/HomeActivity";
+import ActivityList from "./views/activity/ActivityList";
+import AddOrEditActivity from "./views/activity/AddOrEditActivity";
 
 const routers = [
     {
@@ -226,6 +229,33 @@ const routers = [
                         name: 'updateTheme',
                         meta: {title: '主题更新'},
                         component: AddOrUpdateTheme,
+                    },
+
+                ]
+            },
+            {
+                path: '/homeActivity',
+                name: 'homeActivity',
+                meta: {title: '活动管理'},
+                component: HomeActivity,
+                children:[
+                    {
+                        path: '/activityList',
+                        name: 'activityList',
+                        meta: {title: '活动列表'},
+                        component: ActivityList,
+                    },
+                    {
+                        path: '/addActivity',
+                        name: 'addActivity',
+                        meta: {title: '添加活动'},
+                        component: AddOrEditActivity,
+                    },
+                    {
+                        path: '/updateActivity',
+                        name: 'updateActivity',
+                        meta: {title: '活动更新'},
+                        component: AddOrEditActivity,
                     },
 
                 ]

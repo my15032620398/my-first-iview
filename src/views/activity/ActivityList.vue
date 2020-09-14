@@ -1,24 +1,28 @@
 <template>
   <div class="sp-0">
     <div class="t-1">
-      <div class="t-1-1">主题列表</div>
-      <Button type="primary" @click="addTheme">添加主题</Button>
+      <div class="t-1-1">活动列表</div>
+      <Button type="primary" @click="addActivity">添加活动</Button>
     </div>
     <Table border :columns="columns12" :data="data6" :loading="loading" class="t-0"  >
-      <template slot-scope="{row}" slot="title_img">
-        <div class="i-1">
-          <img :src="row.title_img" class="img">
-        </div>
-      </template>
       <template slot-scope="{row}" slot="entrance_img">
-        <div class="i-1">
-          <img :src="row.entrance_img" class="img">
+        <div class="i-1" v-show="row.entrance_img">
+          <img :src="row.entrance_img" class="bannerImg">
         </div>
       </template>
       <template slot-scope="{row}" slot="internal_top_img">
-        <div class="i-1">
-          <img :src="row.internal_top_img" class="img">
+        <div class="i-1" v-show="row.internal_top_img">
+          <img :src="row.internal_top_img" class="bannerImg">
         </div>
+      </template>
+      <template slot-scope="{ row }" slot="start_time">
+        <strong>{{ row.start_time | formatDate}}</strong>
+      </template>
+      <template slot-scope="{ row }" slot="end_time">
+        <strong>{{ row.end_time | formatDate}}</strong>
+      </template>
+      <template slot-scope="{ row }" slot="online">
+        <strong>{{ row.online=='1'?'是':'否' }}</strong>
       </template>
       <template slot-scope="{ row, index }" slot="action">
         <Button type="primary" size="small" style="margin-right: 5px" @click="edit(row)">编辑</Button>
@@ -34,10 +38,10 @@
 </template>
 
 <script>
-    import http from "../request/http";
-
+    import http from "../../request/http";
+    import moment from "moment";
     export default {
-        name: "ThemeList",
+        name: "ActivityList",
         data(){
             return{
                 columns12: [
@@ -48,8 +52,8 @@
                         width: 100
                     },
                     {
-                        title: '标题图',
-                        slot: 'title_img',
+                        title: '入口图',
+                        slot: 'entrance_img',
                         align: "center",
                     },
                     {
@@ -63,23 +67,33 @@
                         align: "center",
                     },
                     {
-                        title: '模板名',
-                        key: 'tpl_name',
+                        title: '提示信息',
+                        key: 'remark',
+                        align: "center",
+                    },
+                    {
+                        title: '顶部图',
+                        slot: 'internal_top_img',
+                        align: "center",
+                    },
+                    {
+                        title: '状态',
+                        slot: 'online',
+                        align: "center",
+                    },
+                    {
+                        title: '开始时间',
+                        slot: 'start_time',
+                        align: "center",
+                    },
+                    {
+                        title: '结束时间',
+                        slot: 'end_time',
                         align: "center",
                     },
                     {
                         title: '描述',
                         key: 'description',
-                        align: "center",
-                    },
-                    {
-                        title: '入口图',
-                        slot: 'entrance_img',
-                        align: "center",
-                    },
-                    {
-                        title: '外连接图',
-                        slot: 'internal_top_img',
                         align: "center",
                     },
                     {
@@ -93,7 +107,7 @@
                 data6: [],
                 loading: true,
                 page: 1,
-                count: 2,
+                count: 10,
                 total: 0,
             }
         },
@@ -103,7 +117,7 @@
                     page: this.page,
                     count: this.count,
                 }
-                http.fetchGet("/v1/theme/page", param).then((res) => {
+                http.fetchGet("/v1/activity/page", param).then((res) => {
                     this.total = res.data.total;
                     this.data6 = res.data.items
                 }).catch(err => {
@@ -111,24 +125,30 @@
                 })
                 this.loading = false
             },
-            addTheme(){
-              this.$router.push('/addTheme')
+            addActivity(){
+
             },
-            edit(themeData){
-                this.$router.push({path: '/updateTheme', query: {data: themeData}})
+            edit(data){
+              this.$router.push({path:'/updateActivity',query:{data:data}})
             },
             remove(id,index){
-              http.fetchDelete('/v1/theme/'+id,null).then((res)=>{
-                  this.data6.splice(index,1)
-                  this.$Message.success(res.data.message)
-              }).catch(err=>{
-                  this.$Message.error(JSON.stringify(err.response.data.message))
-              })
+                http.fetchDelete('/v1/activity/'+id,null).then((res)=>{
+                    this.$Message.success(res.data.message)
+                    this.data6.splice(index,1)
+                }).catch(err=>{
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
             },
             onPageChange(page){
                 this.page = page;
-                this.initData();
+                this.initData()
             }
+
+        },
+        filters:{
+          formatDate(time){
+              return moment(time).format('YYYY-MM-DD hh:mm:ss')
+          }
         },
         created() {
           this.initData()
@@ -152,7 +172,7 @@
     margin-right: 4px;
   }
 
-  .img {
+  .bannerImg {
     width: 100%;
     height: 100%;
   }
@@ -176,12 +196,5 @@
     align-content: center;
     justify-items: center;
     justify-content: center;
-  }
-  .top {
-    padding: 10px;
-    background: rgba(0, 153, 229, .7);
-    color: #fff;
-    text-align: center;
-    border-radius: 2px;
   }
 </style>

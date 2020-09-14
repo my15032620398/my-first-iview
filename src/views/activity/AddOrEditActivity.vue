@@ -29,6 +29,7 @@
           <UploadFile :uploadList="internal_top_img"></UploadFile>
         </FormItem>
         <FormItem label="描述">
+
           <Input v-model="activityData.description" placeholder="请输入描述" class="form"/>
         </FormItem>
         <div class="gridCategoryBut">

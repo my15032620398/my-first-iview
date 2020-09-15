@@ -22,6 +22,10 @@
           <i-switch v-model="activityData.online" :true-value=1 :false-value=0 />
           上线
         </FormItem>
+        <FormItem label="时间">
+          <TimePicker format="yyyy年MM月dd日" type="timerange" placement="bottom-end" placeholder="Select time"
+                      style="width: 270px"></TimePicker>
+        </FormItem>
         <FormItem label="入口图">
           <UploadFile :uploadList="entrance_img"></UploadFile>
         </FormItem>
@@ -29,7 +33,6 @@
           <UploadFile :uploadList="internal_top_img"></UploadFile>
         </FormItem>
         <FormItem label="描述">
-
           <Input v-model="activityData.description" placeholder="请输入描述" class="form"/>
         </FormItem>
         <div class="gridCategoryBut">
@@ -46,32 +49,33 @@
 <script>
     import ImgUtil from "../../utils/ImgUtil";
     import UploadFile from "../../components/UploadFile";
+
     export default {
         name: "AddOrEditActivity",
-        components:{
+        components: {
             UploadFile
         },
-        data(){
-            return{
-                addOrUpdate:false,
-                activityData:{},
-                internal_top_img:[],
-                internalItem:{},
-                entrance_img:[],
-                entranceItem:{}
+        data() {
+            return {
+                addOrUpdate: false,
+                activityData: {},
+                internal_top_img: [],
+                internalItem: {},
+                entrance_img: [],
+                entranceItem: {}
 
             }
         },
-        methods:{
-            initData(){
-              this.activityData = this.$route.query.data;
-              if(!this.$route.query.data){
-                  this.addOrUpdate = true
-              }
-              this._initEntranceImg();
-              this._initInternalTopImg();
+        methods: {
+            initData() {
+                this.activityData = this.$route.query.data;
+                if (!this.$route.query.data) {
+                    this.addOrUpdate = true
+                }
+                this._initEntranceImg();
+                this._initInternalTopImg();
             },
-            _initEntranceImg(){
+            _initEntranceImg() {
                 if (!this.activityData.entrance_img) {
                     return
                 }
@@ -85,7 +89,7 @@
                 this.entranceItem.percentage = 100
                 this.entrance_img.push(this.entranceItem)
             },
-            _initInternalTopImg(){
+            _initInternalTopImg() {
                 if (!this.activityData.internal_top_img) {
                     return
                 }
@@ -99,13 +103,13 @@
                 this.internalItem.percentage = 100
                 this.internal_top_img.push(this.internalItem)
             },
-            back(){
+            back() {
                 this.$router.push('/activityList')
             },
-            addActivity(){
+            addActivity() {
 
             },
-            updateActivity(){
+            updateActivity() {
 
             }
         },
@@ -152,10 +156,12 @@
   .form {
     width: 550px;
   }
-  .in-1{
+
+  .in-1 {
     width: 100px;
   }
-  .dp-0{
+
+  .dp-0 {
     display: flex;
     flex-direction: column;
   }

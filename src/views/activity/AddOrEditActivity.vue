@@ -23,8 +23,7 @@
           上线
         </FormItem>
         <FormItem label="时间">
-          <TimePicker format="yyyy年MM月dd日" type="timerange" placement="bottom-end" placeholder="Select time"
-                      style="width: 270px"></TimePicker>
+          <DatePicker @on-change="onChangeDate" :options="onOptions" v-model="start_end_time" type="daterange" format="yyyy-MM-dd" placeholder="选择开始-结束时间" style="width: 200px"></DatePicker>
         </FormItem>
         <FormItem label="入口图">
           <UploadFile :uploadList="entrance_img"></UploadFile>
@@ -42,6 +41,9 @@
           <Button html-type="reset">重置</Button>
         </div>
       </Form>
+    </div>
+    <div style="margin-top: 20px">
+      <router-view></router-view>
     </div>
   </div>
 </template>
@@ -62,18 +64,29 @@
                 internal_top_img: [],
                 internalItem: {},
                 entrance_img: [],
-                entranceItem: {}
-
+                entranceItem: {},
+                start_end_time:[],
+                onOptions:{
+                    disabledDate(date){
+                        return date && date.valueOf() < Date.now() - 86400000;
+                    }
+                }
             }
         },
         methods: {
             initData() {
                 this.activityData = this.$route.query.data;
+                console.log(this.activityData)
                 if (!this.$route.query.data) {
                     this.addOrUpdate = true
+                    return
                 }
+                this.start_end_time.push(this.activityData.start_time)
+                this.start_end_time.push(this.activityData.end_time)
+
                 this._initEntranceImg();
                 this._initInternalTopImg();
+                this.$router.push('/couponList')
             },
             _initEntranceImg() {
                 if (!this.activityData.entrance_img) {
@@ -110,8 +123,12 @@
 
             },
             updateActivity() {
-
-            }
+            },
+            onChangeDate(date,type){
+                this.start_end_time = date;
+                console.log(date)
+                console.log(type)
+            },
         },
         created() {
             this.initData();

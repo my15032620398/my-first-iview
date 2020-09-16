@@ -28,7 +28,8 @@ import AddOrUpdateTheme from "./theme/AddOrUpdateTheme";
 import HomeActivity from "./views/activity/HomeActivity";
 import ActivityList from "./views/activity/ActivityList";
 import AddOrEditActivity from "./views/activity/AddOrEditActivity";
-import CouponList from "./views/CouponList";
+import CouponList from "./views/coupon/CouponList";
+import EditCoupon from "./views/coupon/EditCoupon";
 
 const routers = [
     {
@@ -263,6 +264,12 @@ const routers = [
                                 name: 'couponList',
                                 meta: {title: '添加活动'},
                                 component: CouponList,
+                            },
+                            {
+                                path: '/editCoupon',
+                                name: 'editCoupon',
+                                meta: {title: '更新优惠券'},
+                                component: EditCoupon,
                             }
                         ]
                     },

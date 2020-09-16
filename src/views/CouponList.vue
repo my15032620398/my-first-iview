@@ -2,7 +2,6 @@
   <div class="sp-0">
     <div class="t-1">
       <div class="t-1-1">优惠券列表</div>
-
     </div>
     <Table border :columns="columns12" :data="data6" :loading="loading" class="t-0"  >
       <template slot-scope="{ row }" slot="start_time">

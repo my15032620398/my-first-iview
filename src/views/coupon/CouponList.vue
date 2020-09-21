@@ -113,7 +113,13 @@
             edit(data) {
               this.$router.push({path:'/editCoupon',query:{data:data}})
             },
-            remove() {
+            remove(id,index) {
+                http.fetchDelete('/v1/coupon/'+id,null).then((res)=>{
+                    this.$Message.success(res.data.message)
+                    this.data6.splice(index, 1);
+                }).catch(err=>{
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
 
             },
             onPageChange() {

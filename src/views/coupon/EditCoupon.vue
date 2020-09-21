@@ -69,6 +69,8 @@
 </template>
 
 <script>
+    import http from "../../request/http";
+    import moment from "moment";
     export default {
         name: "EditCoupon",
         data() {
@@ -103,17 +105,38 @@
         methods: {
             initData() {
                 this.couponData = this.$route.query.data;
+                console.log(this.couponData)
                 this.couponData.full_money = this.couponData.full_money ? this.couponData.full_money : 0
                 this.couponData.minus = this.couponData.minus ? this.couponData.minus : 0
                 this.couponData.rate =this.couponData.rate?this.couponData.rate:0
+                this.start_end_time.push(this.couponData.start_time)
+                this.start_end_time.push(this.couponData.end_time)
             },
             back() {
                 this.$router.push('/couponList')
             },
-            onChangeDate() {
+            onChangeDate(time) {
+                console.log(time)
 
             },
             updateSku() {
+                const param ={
+                    title:this.couponData.title,
+                    description:this.couponData.description,
+                    full_money:this.couponData.full_money,
+                    minus:this.couponData.minus,
+                    discount:this.couponData.discount,
+                    type:this.couponData.type,
+                    activity_id:this.couponData.activity_id,
+                    start_time:moment(this.start_end_time[0]).format('YYYY-MM-DD hh:mm:ss'),
+                    end_time:moment(this.start_end_time[1]).format('YYYY-MM-DD hh:mm:ss')
+                }
+                console.log(param)
+                http.fetchPut('/v1/coupon/'+this.couponData.id,param).then((res)=>{
+                    this.$Message.success(res.data.message)
+                }).catch(err=>{
+                    this.$Message.error(JSON.stringify(err.response.data.message))
+                })
             }
         },
         computed: {},
